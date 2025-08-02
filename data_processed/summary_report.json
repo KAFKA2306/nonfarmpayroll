@@ -1,0 +1,23 @@
+{
+  "dataset_info": {
+    "total_records": 1039,
+    "date_range": {
+      "start": "1939-01-01",
+      "end": "2025-07-01"
+    },
+    "latest_employment": 159539.0,
+    "processing_timestamp": "2025-08-02T11:39:42.636689"
+  },
+  "revision_statistics": {
+    "mean_revision": 17.14633066895259,
+    "median_revision": 17.644766397876083,
+    "std_revision": 73.39653858937892,
+    "max_positive": 303.9548617991022,
+    "max_negative": -228.09505050518055
+  },
+  "uncertainty_analysis": {
+    "bls_statistical_error": 85.0,
+    "revision_uncertainty": 73.39653858937892,
+    "combined_uncertainty": 112.30339209882393
+  }
+}

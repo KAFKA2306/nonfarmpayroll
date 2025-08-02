@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employment Statistics Re-analysis Dashboard</title>
+    <link rel="stylesheet" href="dashboard.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>🎯 Employment Statistics Re-analysis Dashboard</h1>
+            <p class="subtitle">Comprehensive analysis of US Nonfarm Payroll data reliability and revision patterns</p>
+            <div class="status-indicator">
+                <span class="status-dot" id="statusDot"></span>
+                <span id="statusText">Loading...</span>
+            </div>
+        </header>
+
+        <!-- Loading Screen -->
+        <div id="loadingScreen" class="loading-screen">
+            <div class="loader"></div>
+            <p>Loading employment data...</p>
+        </div>
+
+        <!-- Main Dashboard -->
+        <div id="mainDashboard" class="main-dashboard" style="display: none;">
+            
+            <!-- Summary Cards -->
+            <section class="summary-section">
+                <h2>📊 Key Metrics</h2>
+                <div class="cards-container">
+                    <div class="card">
+                        <div class="card-icon">👥</div>
+                        <div class="card-content">
+                            <h3 id="latestEmployment">--</h3>
+                            <p>Latest Employment Level (K)</p>
+                            <small id="employmentChange">--</small>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-icon">📈</div>
+                        <div class="card-content">
+                            <h3 id="totalRecords">--</h3>
+                            <p>Total Records Analyzed</p>
+                            <small id="dateRange">--</small>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-icon">🔄</div>
+                        <div class="card-content">
+                            <h3 id="meanRevision">--</h3>
+                            <p>Mean Revision (K)</p>
+                            <small id="revisionStd">--</small>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-icon">⚠️</div>
+                        <div class="card-content">
+                            <h3 id="totalUncertainty">--</h3>
+                            <p>Combined Uncertainty (±K)</p>
+                            <small>BLS + Revision Errors</small>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Charts Section -->
+            <section class="charts-section">
+                <div class="chart-container">
+                    <h3>📈 Employment Level Trend</h3>
+                    <canvas id="employmentChart"></canvas>
+                </div>
+                
+                <div class="chart-container">
+                    <h3>🔄 Revision Pattern Analysis</h3>
+                    <canvas id="revisionChart"></canvas>
+                </div>
+            </section>
+
+            <!-- Uncertainty Analysis -->
+            <section class="uncertainty-section">
+                <h2>⚠️ Uncertainty Analysis</h2>
+                <div class="uncertainty-container">
+                    <div class="uncertainty-chart">
+                        <canvas id="uncertaintyChart"></canvas>
+                    </div>
+                    <div class="uncertainty-details">
+                        <div class="uncertainty-item">
+                            <span class="uncertainty-label">BLS Statistical Error:</span>
+                            <span class="uncertainty-value" id="blsError">±85K</span>
+                        </div>
+                        <div class="uncertainty-item">
+                            <span class="uncertainty-label">Historical Revision Error:</span>
+                            <span class="uncertainty-value" id="revisionError">--</span>
+                        </div>
+                        <div class="uncertainty-item highlight">
+                            <span class="uncertainty-label">Combined Uncertainty:</span>
+                            <span class="uncertainty-value" id="combinedError">--</span>
+                        </div>
+                        <div class="uncertainty-explanation">
+                            <p>The combined uncertainty represents the realistic error range for new employment releases, accounting for both sampling errors and historical revision patterns.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Data Quality Section -->
+            <section class="quality-section">
+                <h2>✅ Data Quality Assessment</h2>
+                <div class="quality-container">
+                    <div class="quality-score">
+                        <div class="score-circle" id="qualityCircle">
+                            <span id="qualityScore">--</span>
+                            <small>/100</small>
+                        </div>
+                        <p>Overall Quality Score</p>
+                    </div>
+                    <div class="quality-metrics">
+                        <div class="quality-item">
+                            <span class="quality-icon">📊</span>
+                            <div>
+                                <strong>Data Completeness</strong>
+                                <div class="progress-bar">
+                                    <div class="progress" id="completenessProgress"></div>
+                                </div>
+                                <span id="completenessText">--</span>
+                            </div>
+                        </div>
+                        <div class="quality-item">
+                            <span class="quality-icon">🎯</span>
+                            <div>
+                                <strong>Revision Consistency</strong>
+                                <div class="progress-bar">
+                                    <div class="progress" id="consistencyProgress"></div>
+                                </div>
+                                <span id="consistencyText">--</span>
+                            </div>
+                        </div>
+                        <div class="quality-item">
+                            <span class="quality-icon">🚨</span>
+                            <div>
+                                <strong>Outlier Detection</strong>
+                                <div class="outlier-info">
+                                    <span id="outlierCount">--</span> periods flagged
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Recent Data Table -->
+            <section class="data-section">
+                <h2>📋 Recent Employment Data</h2>
+                <div class="table-controls">
+                    <button class="btn" id="showAllBtn">Show All Data</button>
+                    <button class="btn" id="showRecentBtn" class="active">Recent 24 Months</button>
+                    <button class="btn" id="exportBtn">Export CSV</button>
+                </div>
+                <div class="table-container">
+                    <table id="dataTable" class="data-table">
+                        <thead id="tableHeader">
+                            <!-- Headers will be populated by JavaScript -->
+                        </thead>
+                        <tbody id="tableBody">
+                            <!-- Data will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="table-info">
+                    <span id="tableInfo">Showing -- of -- records</span>
+                </div>
+            </section>
+
+            <!-- System Information -->
+            <section class="system-section">
+                <h2>🔧 System Information</h2>
+                <div class="system-info">
+                    <div class="info-item">
+                        <strong>Last Updated:</strong>
+                        <span id="lastUpdated">--</span>
+                    </div>
+                    <div class="info-item">
+                        <strong>Data Source:</strong>
+                        <span>FRED (Federal Reserve Economic Data)</span>
+                    </div>
+                    <div class="info-item">
+                        <strong>Processing Status:</strong>
+                        <span class="status-badge" id="processingStatus">--</span>
+                    </div>
+                    <div class="info-item">
+                        <strong>Next Update:</strong>
+                        <span id="nextUpdate">First Friday of next month</span>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>&copy; 2025 Employment Statistics Re-analysis System | Data from FRED/BLS</p>
+            <p>⚠️ For informational purposes only. Not investment advice.</p>
+        </footer>
+    </div>
+
+    <script src="dashboard.js"></script>
+</body>
+</html>
