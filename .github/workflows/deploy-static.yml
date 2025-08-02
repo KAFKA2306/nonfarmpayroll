@@ -55,16 +55,14 @@ jobs:
         if [ ! -f "data_processed/nfp_revisions.csv" ] && [ "${{ inputs.use_demo_data }}" == "true" ]; then
           echo "Creating demo data for dashboard preview..."
           mkdir -p data_processed
-          
-          # Create demo data using Python
-          python3 -c "
+          cat > create_demo_data.py << 'EOF'
 import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 import json
 
 # Generate demo employment data
-dates = pd.date_range('1990-01-01', '2024-12-01', freq='MS')
+dates = pd.date_range("1990-01-01", "2024-12-01", freq="MS")
 np.random.seed(42)
 
 # Realistic employment trend
@@ -76,56 +74,58 @@ employment = base_trend + seasonal + noise
 # Create revision patterns
 revision_noise = np.random.normal(15, 75, len(dates))
 df = pd.DataFrame({
-    'date': dates,
-    'final': employment.astype(int),
-    'release1': (employment - revision_noise).astype(int),
-    'release2': (employment - revision_noise * 0.4).astype(int),
-    'release3': (employment - revision_noise * 0.1).astype(int),
-    'rev_final': revision_noise.astype(int),
-    'se': 85,
-    'ci90_lower': (employment - revision_noise - 136).astype(int),
-    'ci90_upper': (employment - revision_noise + 136).astype(int),
-    'is_outlier': False,
-    'revision_magnitude': 'Medium'
+    "date": dates,
+    "final": employment.astype(int),
+    "release1": (employment - revision_noise).astype(int),
+    "release2": (employment - revision_noise * 0.4).astype(int),
+    "release3": (employment - revision_noise * 0.1).astype(int),
+    "rev_final": revision_noise.astype(int),
+    "se": 85,
+    "ci90_lower": (employment - revision_noise - 136).astype(int),
+    "ci90_upper": (employment - revision_noise + 136).astype(int),
+    "is_outlier": False,
+    "revision_magnitude": "Medium"
 })
 
 # Flag some outlier periods
-covid_mask = (df['date'] >= '2020-03-01') & (df['date'] <= '2020-06-01')
-df.loc[covid_mask, 'is_outlier'] = True
+covid_mask = (df["date"] >= "2020-03-01") & (df["date"] <= "2020-06-01")
+df.loc[covid_mask, "is_outlier"] = True
 
 # Save demo data
-df.to_csv('data_processed/nfp_revisions.csv', index=False)
+df.to_csv("data_processed/nfp_revisions.csv", index=False)
 
 # Create demo summary
 summary = {
-    'dataset_info': {
-        'total_records': len(df),
-        'date_range': {
-            'start': str(df['date'].min().date()),
-            'end': str(df['date'].max().date())
+    "dataset_info": {
+        "total_records": len(df),
+        "date_range": {
+            "start": str(df["date"].min().date()),
+            "end": str(df["date"].max().date())
         },
-        'latest_employment': float(df['final'].iloc[-1]),
-        'processing_timestamp': datetime.now().isoformat()
+        "latest_employment": float(df["final"].iloc[-1]),
+        "processing_timestamp": datetime.now().isoformat()
     },
-    'revision_statistics': {
-        'mean_revision': float(df['rev_final'].mean()),
-        'median_revision': float(df['rev_final'].median()),
-        'std_revision': float(df['rev_final'].std()),
-        'max_positive': float(df['rev_final'].max()),
-        'max_negative': float(df['rev_final'].min())
+    "revision_statistics": {
+        "mean_revision": float(df["rev_final"].mean()),
+        "median_revision": float(df["rev_final"].median()),
+        "std_revision": float(df["rev_final"].std()),
+        "max_positive": float(df["rev_final"].max()),
+        "max_negative": float(df["rev_final"].min())
     },
-    'uncertainty_analysis': {
-        'bls_statistical_error': 85.0,
-        'revision_uncertainty': float(df['rev_final'].std()),
-        'combined_uncertainty': float(np.sqrt(85.0**2 + df['rev_final'].std()**2))
+    "uncertainty_analysis": {
+        "bls_statistical_error": 85.0,
+        "revision_uncertainty": float(df["rev_final"].std()),
+        "combined_uncertainty": float(np.sqrt(85.0**2 + df["rev_final"].std()**2))
     }
 }
 
-with open('data_processed/summary_report.json', 'w') as f:
+with open("data_processed/summary_report.json", "w") as f:
     json.dump(summary, f, indent=2)
 
-print('Demo data created successfully')
-"
+print("Demo data created successfully")
+EOF
+          python3 create_demo_data.py
+          rm create_demo_data.py
         fi
         
         # Copy data files (real or demo)

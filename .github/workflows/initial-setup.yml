@@ -87,7 +87,7 @@ jobs:
           echo "⚠️ Real data download failed, creating demo data..."
           
           # Create comprehensive demo data
-          python3 -c "
+          cat > create_initial_demo.py << 'EOF'
 import pandas as pd
 import numpy as np
 from datetime import datetime
@@ -206,9 +206,11 @@ timestamp = datetime.now().strftime('%Y%m%d')
 df_fred.to_csv(f'data_raw/fred_snapshots/PAYEMS_{timestamp}.csv', index=False)
 
 print(f'Created demo dataset with {len(df)} records')
-print(f'Employment range: {df[\"final\"].min():,}K to {df[\"final\"].max():,}K')
-print(f'Crisis periods: {df[\"is_outlier\"].sum()} flagged')
-"
+print(f'Employment range: {df["final"].min():,}K to {df["final"].max():,}K')
+print(f'Crisis periods: {df["is_outlier"].sum()} flagged')
+EOF
+          python3 create_initial_demo.py
+          rm create_initial_demo.py
           data_source="Demo Data"
         fi
         
