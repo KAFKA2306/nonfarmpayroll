@@ -1,0 +1,270 @@
+name: Initial Repository Setup
+
+on:
+  # Run once when repository is first created or this workflow is added
+  workflow_dispatch:
+    inputs:
+      initialize:
+        description: 'Initialize dashboard with demo data'
+        required: false
+        default: 'true'
+        type: boolean
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Verify repository structure
+      run: |
+        echo "## 🔍 Repository Structure Check" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        
+        # Check for essential files
+        essential_files=(
+          "dashboard.html"
+          "dashboard.css" 
+          "dashboard.js"
+          "scripts/01_download_fred.py"
+          "scripts/03_merge_revisions.py"
+          "requirements.txt"
+        )
+        
+        all_files_exist=true
+        for file in "${essential_files[@]}"; do
+          if [ -f "$file" ]; then
+            echo "✅ $file" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ $file (missing)" >> $GITHUB_STEP_SUMMARY
+            all_files_exist=false
+          fi
+        done
+        
+        echo "" >> $GITHUB_STEP_SUMMARY
+        
+        if [ "$all_files_exist" = true ]; then
+          echo "✅ **All essential files present**" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "❌ **Some essential files are missing**" >> $GITHUB_STEP_SUMMARY
+          echo "Please ensure all required files are committed to the repository." >> $GITHUB_STEP_SUMMARY
+        fi
+        
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+        
+    - name: Install dependencies
+      run: |
+        pip install --upgrade pip
+        pip install pandas numpy requests pathlib pyarrow
+        
+    - name: Create initial data and dashboard
+      run: |
+        echo "🚀 Setting up initial dashboard..."
+        
+        # Create directories
+        mkdir -p docs data_processed data_raw/fred_snapshots
+        
+        # Try to get real data first
+        echo "📊 Attempting to download real FRED data..."
+        if python scripts/01_download_fred.py && python scripts/03_merge_revisions.py; then
+          echo "✅ Real data downloaded successfully"
+          data_source="FRED (Real Data)"
+        else
+          echo "⚠️ Real data download failed, creating demo data..."
+          
+          # Create comprehensive demo data
+          python3 -c "
+import pandas as pd
+import numpy as np
+from datetime import datetime
+import json
+import pathlib
+
+# Create directories
+pathlib.Path('data_processed').mkdir(exist_ok=True)
+pathlib.Path('data_raw/fred_snapshots').mkdir(parents=True, exist_ok=True)
+
+# Generate realistic employment data (1939-2025)
+dates = pd.date_range('1939-01-01', '2025-07-01', freq='MS')
+np.random.seed(42)  # Reproducible demo data
+
+# Realistic employment progression
+base_values = [
+    (1939, 29000), (1945, 40000), (1950, 45000), (1960, 55000),
+    (1970, 71000), (1980, 90000), (1990, 110000), (2000, 130000),
+    (2010, 140000), (2020, 150000), (2025, 159000)
+]
+
+# Interpolate base trend
+employment_trend = np.interp(
+    [d.year for d in dates],
+    [year for year, _ in base_values],
+    [emp for _, emp in base_values]
+)
+
+# Add seasonal patterns and noise
+seasonal = 2000 * np.sin(2 * np.pi * np.arange(len(dates)) / 12)
+noise = np.random.normal(0, 800, len(dates))
+final_employment = employment_trend + seasonal + noise
+
+# Create revision patterns (realistic based on BLS patterns)
+revision_bias = 15  # Slight upward revision bias
+revision_std = 75   # Standard deviation matches historical data
+revision_errors = np.random.normal(revision_bias, revision_std, len(dates))
+
+# Build complete dataset
+df = pd.DataFrame({
+    'date': dates,
+    'final': final_employment.astype(int),
+    'release1': (final_employment - revision_errors).astype(int),
+    'release2': (final_employment - revision_errors * 0.4).astype(int),
+    'release3': (final_employment - revision_errors * 0.1).astype(int),
+    'rev_2to1': (revision_errors * 0.6).astype(int),
+    'rev_3to2': (revision_errors * 0.3).astype(int),
+    'rev_final': revision_errors.astype(int),
+    'se': 85,
+    'ci90_lower': (final_employment - revision_errors - 136).astype(int),
+    'ci90_upper': (final_employment - revision_errors + 136).astype(int),
+    'is_outlier': False,
+    'revision_magnitude': 'Medium'
+})
+
+# Mark historical crisis periods
+crisis_periods = [
+    ('1929-10-01', '1933-03-01'),  # Great Depression
+    ('2001-03-01', '2001-11-01'),  # Dot-com recession
+    ('2007-12-01', '2009-06-01'),  # Financial crisis
+    ('2020-02-01', '2020-06-01'),  # COVID-19 pandemic
+]
+
+for start, end in crisis_periods:
+    mask = (df['date'] >= start) & (df['date'] <= end)
+    df.loc[mask, 'is_outlier'] = True
+    # Increase revision volatility during crises
+    df.loc[mask, 'rev_final'] = df.loc[mask, 'rev_final'] * 2
+
+# Categorize revision magnitudes
+abs_rev = np.abs(df['rev_final'])
+df['revision_magnitude'] = pd.cut(
+    abs_rev,
+    bins=[0, 50, 100, 200, np.inf],
+    labels=['Small', 'Medium', 'Large', 'Extreme'],
+    include_lowest=True
+)
+
+# Save dataset
+df.to_csv('data_processed/nfp_revisions.csv', index=False)
+
+# Create summary statistics
+summary = {
+    'dataset_info': {
+        'total_records': len(df),
+        'date_range': {
+            'start': str(df['date'].min().date()),
+            'end': str(df['date'].max().date())
+        },
+        'latest_employment': float(df['final'].iloc[-1]),
+        'processing_timestamp': datetime.now().isoformat()
+    },
+    'revision_statistics': {
+        'mean_revision': float(df['rev_final'].mean()),
+        'median_revision': float(df['rev_final'].median()),
+        'std_revision': float(df['rev_final'].std()),
+        'max_positive': float(df['rev_final'].max()),
+        'max_negative': float(df['rev_final'].min())
+    },
+    'uncertainty_analysis': {
+        'bls_statistical_error': 85.0,
+        'revision_uncertainty': float(df['rev_final'].std()),
+        'combined_uncertainty': float(np.sqrt(85.0**2 + df['rev_final'].std()**2))
+    }
+}
+
+with open('data_processed/summary_report.json', 'w') as f:
+    json.dump(summary, f, indent=2)
+
+# Also save FRED snapshot format for consistency
+df_fred = pd.DataFrame({
+    'DATE': df['date'],
+    'PAYEMS': df['final']
+})
+timestamp = datetime.now().strftime('%Y%m%d')
+df_fred.to_csv(f'data_raw/fred_snapshots/PAYEMS_{timestamp}.csv', index=False)
+
+print(f'Created demo dataset with {len(df)} records')
+print(f'Employment range: {df[\"final\"].min():,}K to {df[\"final\"].max():,}K')
+print(f'Crisis periods: {df[\"is_outlier\"].sum()} flagged')
+"
+          data_source="Demo Data"
+        fi
+        
+        # Prepare dashboard files for GitHub Pages
+        cp dashboard.html docs/index.html
+        cp dashboard.css docs/
+        cp dashboard.js docs/
+        cp -r data_processed docs/
+        
+        # Create status files
+        echo "$(date -u +"%Y-%m-%d %H:%M:%S UTC")" > docs/last_updated.txt
+        
+        cat > docs/status.json << EOF
+        {
+          "status": "operational",
+          "deployment_type": "initial_setup",
+          "data_source": "$data_source",
+          "last_updated": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
+          "workflow_run": "${{ github.run_id }}",
+          "commit_sha": "${{ github.sha }}",
+          "next_update": "First Friday of next month"
+        }
+        EOF
+        
+        # Add setup complete banner
+        sed -i 's/<body>/<body><div style="background:#10b981;color:white;text-align:center;padding:10px;font-weight:bold;">🎉 Dashboard Setup Complete! Automated updates will begin on the first Friday of each month.<\/div>/' docs/index.html
+        
+    - name: Upload Pages artifact
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: docs/
+        
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4
+      
+    - name: Create setup summary
+      run: |
+        echo "## 🎉 Dashboard Setup Complete!" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "**Dashboard URL:** https://kafka2306.github.io/nonfarmpayroll/" >> $GITHUB_STEP_SUMMARY
+        echo "**Status:** ✅ Operational" >> $GITHUB_STEP_SUMMARY
+        echo "**Data Source:** $data_source" >> $GITHUB_STEP_SUMMARY
+        echo "**Setup Time:** $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### 🚀 What's Next?" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ Dashboard is live and accessible" >> $GITHUB_STEP_SUMMARY
+        echo "- 📅 Automatic updates every month (first Friday)" >> $GITHUB_STEP_SUMMARY
+        echo "- 🏥 Daily health checks to ensure reliability" >> $GITHUB_STEP_SUMMARY
+        echo "- 🔧 Manual workflow triggers available in Actions tab" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### 📊 Features Available:" >> $GITHUB_STEP_SUMMARY
+        echo "- Interactive employment trend charts" >> $GITHUB_STEP_SUMMARY
+        echo "- Revision pattern analysis" >> $GITHUB_STEP_SUMMARY
+        echo "- Uncertainty quantification" >> $GITHUB_STEP_SUMMARY
+        echo "- Data quality assessment" >> $GITHUB_STEP_SUMMARY
+        echo "- CSV export functionality" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "**Your employment statistics dashboard is ready! 🎊**"

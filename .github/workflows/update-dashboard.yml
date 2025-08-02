@@ -1,0 +1,140 @@
+name: Update Employment Statistics Dashboard
+
+on:
+  # Run on first Friday of each month at 10:30 AM EST (employment data release day)
+  schedule:
+    - cron: '30 15 1-7 * 5'  # 15:30 UTC = 10:30 EST, first Friday of month
+  
+  # Allow manual triggering
+  workflow_dispatch:
+    inputs:
+      force_update:
+        description: 'Force update even if no new data'
+        required: false
+        default: 'false'
+        type: boolean
+  
+  # Run on push to main branch (for testing)
+  push:
+    branches: [ main, master ]
+    paths-ignore:
+      - 'README.md'
+      - 'docs/**'
+      - '*.md'
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  collect-data:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+        
+    - name: Install Python dependencies
+      run: |
+        pip install --upgrade pip
+        pip install pandas requests numpy pathlib
+        pip install pyarrow  # For feather format
+        
+    - name: Create data directories
+      run: |
+        mkdir -p data_raw/fred_snapshots
+        mkdir -p data_processed
+        
+    - name: Download FRED employment data
+      run: |
+        python scripts/01_download_fred.py
+        
+    - name: Process revision data
+      run: |
+        python scripts/03_merge_revisions.py
+        
+    - name: Prepare dashboard files
+      run: |
+        # Copy dashboard files to docs directory for GitHub Pages
+        mkdir -p docs
+        cp dashboard.html docs/index.html
+        cp dashboard.css docs/
+        cp dashboard.js docs/
+        cp -r data_processed docs/
+        
+        # Create a data timestamp file
+        echo "$(date -u +"%Y-%m-%d %H:%M:%S UTC")" > docs/last_updated.txt
+        
+        # Generate a simple status page
+        cat > docs/status.json << EOF
+        {
+          "status": "operational",
+          "last_updated": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
+          "data_source": "FRED",
+          "workflow_run": "${{ github.run_id }}",
+          "commit_sha": "${{ github.sha }}"
+        }
+        EOF
+        
+    - name: Upload Pages artifact
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: docs/
+        
+    outputs:
+      data-updated: ${{ steps.check-data.outputs.updated }}
+
+  deploy:
+    needs: collect-data
+    runs-on: ubuntu-latest
+    
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+      
+    steps:
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4
+      
+  notify:
+    needs: [collect-data, deploy]
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+    - name: Create summary
+      run: |
+        echo "## 📊 Employment Statistics Dashboard Update" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "**Status:** ${{ job.status == 'success' && '✅ Success' || '❌ Failed' }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Time:** $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
+        echo "**Dashboard URL:** https://kafka2306.github.io/nonfarmpayroll/" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        
+        if [ "${{ needs.collect-data.result }}" == "success" ]; then
+          echo "✅ Data collection completed successfully" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "❌ Data collection failed" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        if [ "${{ needs.deploy.result }}" == "success" ]; then
+          echo "✅ Dashboard deployed successfully" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "❌ Dashboard deployment failed" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "**Next Update:** First Friday of next month" >> $GITHUB_STEP_SUMMARY
