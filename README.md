@@ -1,233 +1,121 @@
-# 📊 US Employment Statistics Dashboard
+# nonfarmpayroll — 米国雇用統計改定分析の停止状態
 
-**Live Dashboard**: https://kafka2306.github.io/nonfarmpayroll/
+> **状態: 分析利用不可 / 公開訂正中**  
+> このリポジトリで従来公開していた雇用統計の改定幅、不確実性、品質scoreは、検証済みのBLS公表vintageに基づく結果として確認できませんでした。現在は数値分析を停止し、GitHub Pagesにはstatusだけを公開します。
 
-Fully automated system for analyzing US Nonfarm Payroll Employment data with monthly updates, revision tracking, and uncertainty quantification.
+## 重要な訂正
 
-## 🎯 What This Does
+旧READMEとdashboardでは、次の値を実測結果として表示していました。
 
-- **Collects Real Data**: Downloads latest employment statistics from FRED API every month
-- **Analyzes Revisions**: Tracks how initial job reports get revised over time
-- **Quantifies Uncertainty**: Shows that employment numbers have ±112K error range (not just ±85K published)
-- **Interactive Dashboard**: Professional web interface with charts, tables, export features
-- **Fully Automated**: Updates itself every month on employment release day (first Friday)
+- 平均改定: 約`+17K`
+- 改定の標準偏差: 約`73.4K`
+- 合成不確実性: 約`112.3K`
+- 品質score: `95/100`
+- uptime: `99.9%`
+- monthly workflow成功率: `95%+`
 
-## 📊 Key Insights
+これらの主張を撤回します。
 
-### Employment Data Reliability
-- **BLS Published Error**: ±85,000 jobs (statistical sampling error)
-- **Historical Revision Error**: ±73,400 jobs (based on actual revision patterns)
-- **Combined Reality**: ±112,300 jobs total uncertainty
-- **Revision Bias**: +17K average upward revision (initial reports tend to underestimate)
+default branchの監査で、次を確認しました。
 
-### Why This Matters
-- **Policymakers**: Better understand data limitations for decisions
-- **Markets**: Assess reliability of monthly job reports
-- **Economists**: Quantify measurement uncertainty in key indicator
-- **Public**: See actual accuracy of economic statistics
+1. `data_processed/nfp_revisions.csv`の`release1`、`release2`、`release3`には、1939年から小数を含む人工的な値が保存されている。
+2. `dashboard.js`はdata fileの読込に失敗すると、`Math.random()`でdemo revisionを生成する。
+3. 同じdemo処理が、平均改定、改定標準偏差、合成不確実性を固定値として作る。
+4. `scripts/03_merge_revisions.py`はBLS release dataがない場合、`release1 = final`というplaceholderを作る。
+5. repositoryには`data_processed/bls_releases.csv`または対応するparquetを確認できない。
+6. monthly workflowはFRED PAYEMSを取得するが、BLS初回・第2回・第3回公表値のvintageを取得しない。
 
-## 🚀 Features
+したがって、既存の`nfp_revisions.csv`と`summary_report.json`は、実測BLS改定履歴の正準dataではありません。研究、投資判断、政策評価、統計的主張に使用しないでください。
 
-### Automated Data Pipeline
-- **Monthly Collection**: First Friday of each month at 10:30 AM EST
-- **FRED API Integration**: Real-time government data
-- **Quality Validation**: Automatic error checking and outlier detection
-- **Historical Analysis**: 86+ years of employment data (1939-present)
+## 現在公開する内容
 
-### Interactive Dashboard
-- **Employment Trends**: Line charts with 86+ years of data
-- **Revision Patterns**: Bar charts showing positive/negative changes
-- **Uncertainty Visualization**: Pie charts of error components
-- **Data Tables**: Sortable, filterable, exportable to CSV
-- **Mobile Responsive**: Works on desktop, tablet, phone
+`.github/workflows/update-dashboard.yml`はfail-closedへ変更しました。
 
-### Advanced Analytics
-- **Crisis Detection**: Automatically flags major economic disruptions
-- **Quality Scoring**: Real-time data integrity assessment (95/100)
-- **Statistical Analysis**: Mean, median, standard deviation of revisions
-- **Trend Analysis**: Employment growth patterns and volatility
+- pull requestではstatus page contractを検証する
+- mainへのmerge後はstatus-only Pagesをdeployする
+- 旧`dashboard.html`、`dashboard.js`、synthetic CSVを公開artifactへ含めない
+- 公開statusは`analysis_available: false`を返す
+- 検証済みvintageがない限り、改定統計を表示しない
 
-## 🔧 Setup Instructions
+公開先:
 
-### One-Time Repository Setup
-1. **Fork/Clone**: Copy this repository to your GitHub account
-2. **Enable GitHub Pages**:
-   - Go to Settings → Pages
-   - Set Source to: **"GitHub Actions"**
-3. **Set Permissions**:
-   - Go to Settings → Actions → General
-   - Enable: **"Read and write permissions"**
-4. **Initialize Dashboard**:
-   - Go to Actions tab
-   - Click "Initial Repository Setup"
-   - Click "Run workflow" → "Run workflow"
-   - Wait 2-3 minutes for completion
-
-### Verification
-- Dashboard should be live at: `https://[username].github.io/nonfarmpayroll/`
-- Check Actions tab for green checkmarks
-- Verify data is loading in dashboard
-
-## 📅 How Automation Works
-
-### Monthly Updates (Automatic)
-```yaml
-Schedule: First Friday of each month at 10:30 AM EST
-Process: 
-  1. Download latest FRED employment data
-  2. Calculate revision statistics and uncertainty
-  3. Update all dashboard charts and tables
-  4. Deploy to GitHub Pages
-  5. Generate success/failure report
+```text
+https://kafka2306.github.io/nonfarmpayroll/
 ```
 
-### Daily Health Checks (Automatic)
-```yaml
-Schedule: Every day at 12:00 PM UTC
-Process:
-  1. Check if dashboard is accessible (HTTP 200)
-  2. Verify data is fresh (less than 40 days old)
-  3. Auto-trigger update if data is stale
-  4. Generate health status report
+公開URLがHTTP 200でも、分析が利用可能であることを意味しません。`status.json`の状態を確認してください。
+
+## 現在確認できる実装
+
+| 項目 | 状態 |
+|---|---|
+| FRED PAYEMS取得script | 存在する |
+| latest-vintageの雇用者数系列 | 取得可能 |
+| BLS初回公表値の履歴 | 正準入力なし |
+| 第2回・第3回公表値の履歴 | 正準入力なし |
+| 改定幅の実測集計 | 利用不可 |
+| 不確実性の実測推定 | 利用不可 |
+| 公開dashboard | status-onlyへ停止 |
+
+## FRED PAYEMSだけでは不足する理由
+
+現在取得しているPAYEMS系列は、各観測月について現在利用できる系列値です。これだけでは、当時の初回公表値、第2回公表値、第3回公表値、その後のbenchmark revisionを区別できません。
+
+改定分析には、少なくとも次の列を持つvintage dataが必要です。
+
+```text
+series_id
+observation_date
+release_date
+revision_stage
+value
+unit
+seasonal_adjustment
+source_url
+retrieved_at
+source_document_id
 ```
 
-### Manual Controls (As Needed)
-- **Force Update**: Actions → "Update Employment Statistics Dashboard"
-- **Deploy UI Changes**: Actions → "Deploy Static Dashboard"  
-- **Health Check**: Actions → "Dashboard Health Check"
+## 本復旧の条件
 
-## 📊 Understanding the Data
+1. BLSまたはALFRED等の一次sourceから公表vintageを取得する
+2. observation dateとrelease dateを分離する
+3. 初回、第2回、第3回、benchmark revisionを機械的に識別する
+4. raw vintageを改変せず保存し、derived metricsと分離する
+5. source URL、取得日時、document ID、checksumを保存する
+6. synthetic・demo・placeholder dataをproduction artifactから除外する
+7. revision計算、単位、欠損、重複、期間整合のtestを追加する
+8. READMEとdashboardの数値をraw vintageから再生成する
+9. 公開Pagesのcommit SHAとdata checksumを表示する
 
-### Employment Numbers
-- **Final**: Official employment level after all revisions (thousands of people)
-- **Release 1**: Initial monthly announcement
-- **Revision**: Difference between final and initial (positive = underestimated)
-- **Uncertainty**: ±90% confidence interval around estimates
+## 旧artifactの扱い
 
-### Revision Patterns
-- **Positive Revisions**: Initial estimates were too low (employment higher)
-- **Negative Revisions**: Initial estimates were too high (employment lower)
-- **Large Revisions**: Changes >100K that significantly impact markets
-- **Crisis Periods**: 2008 financial crisis, 2020 pandemic show higher volatility
+次のfileはIncidentの調査証拠として残っていますが、正準分析結果ではありません。
 
-### Quality Metrics
-- **Data Completeness**: Percentage of records with all fields
-- **Consistency**: Accuracy of revision calculations
-- **Outlier Detection**: Automatic flagging of unusual periods
-- **Health Score**: Overall system reliability (0-100)
-
-## 🔍 Technical Details
-
-### Data Sources
-- **FRED PAYEMS**: Federal Reserve Economic Data (official US government)
-- **Processing**: Python scripts with pandas/numpy for statistical analysis
-- **Storage**: CSV files for data, JSON for metadata
-- **Deployment**: GitHub Actions + GitHub Pages (free hosting)
-
-### System Architecture
-```
-FRED API → Python Scripts → Data Processing → Dashboard → GitHub Pages
-    ↓           ↓               ↓              ↓           ↓
-Real Data → Clean/Analyze → Charts/Tables → Web Interface → Public URL
+```text
+data_processed/nfp_revisions.csv
+data_processed/nfp_revisions.feather
+data_processed/nfp_revisions.parquet
+data_processed/summary_report.json
+dashboard.js
 ```
 
-### File Structure
-```
-├── dashboard.html          # Main web interface
-├── dashboard.css           # Professional styling
-├── dashboard.js            # Interactive functionality
-├── scripts/
-│   ├── 01_download_fred.py # Data collection from FRED
-│   └── 03_merge_revisions.py # Statistical analysis
-├── .github/workflows/      # Automation workflows
-│   ├── update-dashboard.yml # Monthly data updates
-│   ├── deploy-static.yml   # UI deployment
-│   ├── health-check.yml    # Daily monitoring
-│   └── initial-setup.yml   # One-time setup
-└── requirements.txt        # Python dependencies
-```
+これらを削除せず残す場合も、再公開・再計算・比較の入力に使用してはいけません。
 
-## 📈 Usage Examples
+## 検証
 
-### For Economists
-- **Research**: Download revision data to study measurement bias
-- **Forecasting**: Use uncertainty bounds to improve predictions
-- **Policy**: Account for data limitations in economic analysis
+status-only workflowは次を検査します。
 
-### For Traders/Investors
-- **Risk Management**: Use ±112K range instead of ±85K for position sizing
-- **Market Timing**: Understand when job reports are likely to be revised
-- **Volatility Trading**: Exploit revision patterns for systematic strategies
+- 公開HTMLに「分析利用不可」が含まれる
+- `analysis_available`が`false`
+- legacy synthetic artifactを信頼しない状態である
+- 撤回済みの固定数値や稼働保証が公開HTMLへ再混入していない
 
-### For Policymakers
-- **Decision Making**: Consider data uncertainty in policy choices
-- **Communication**: Explain measurement limitations to public
-- **Planning**: Account for potential revisions in economic projections
+## 関連Issue
 
-### For Students/Public
-- **Education**: Learn how economic statistics actually work
-- **Critical Thinking**: Understand limitations of headline numbers
-- **Data Literacy**: See real-world example of measurement uncertainty
+- Incident: https://github.com/KAFKA2306/nonfarmpayroll/issues/1
+- 全repository README監査: https://github.com/KAFKA2306/com/issues/3
 
-## 🚨 Troubleshooting
+本リポジトリの出力は投資助言、売買推奨、政策判断の根拠ではありません。
 
-### Dashboard Not Loading
-1. Check if GitHub Pages is enabled (Settings → Pages)
-2. Verify Actions workflow completed successfully
-3. Try hard refresh (Ctrl+F5) to clear cache
-4. Check Actions tab for any failed workflows
-
-### Data Not Updating
-1. Check if it's been >40 days since last update
-2. Health check should auto-trigger updates
-3. Manually run "Update Employment Statistics Dashboard" workflow
-4. Check FRED API status (rarely down)
-
-### Workflow Failures
-1. Check Actions tab for detailed error logs
-2. Most failures are temporary (network issues, API limits)
-3. Re-run failed workflow (usually fixes the issue)
-4. Verify repository permissions are correct
-
-## 📞 Support
-
-### Self-Service
-- **Workflow Logs**: Actions tab shows detailed execution logs
-- **Health Reports**: Daily automated system status
-- **Manual Triggers**: All workflows can be run manually
-- **Error Recovery**: System auto-retries failed operations
-
-### Getting Help
-1. Check Actions tab workflow logs for specific errors
-2. Verify GitHub Pages and Actions settings are correct
-3. Try re-running failed workflows
-4. Most issues are temporary and resolve automatically
-
-## 🎊 Success Metrics
-
-### System Performance
-- **Uptime**: 99.9% availability (GitHub Pages reliability)
-- **Update Success**: 95%+ monthly workflow completion rate
-- **Data Quality**: 95/100 automated quality score
-- **Load Time**: <3 seconds for full dashboard
-
-### Business Impact
-- **Transparency**: Quantifies uncertainty in key economic indicator
-- **Education**: Shows real accuracy of employment statistics
-- **Decision Support**: Provides realistic error bounds for analysis
-- **Public Service**: Free access to comprehensive employment analysis
-
----
-
-## 🚀 Ready to Use
-
-Your dashboard is fully automated and will:
-- ✅ Update every month with new employment data
-- ✅ Monitor itself for health and reliability
-- ✅ Handle errors gracefully with auto-recovery
-- ✅ Provide professional visualizations and analysis
-- ✅ Export data for further research
-
-**Live Dashboard**: https://kafka2306.github.io/nonfarmpayroll/
-
-**Next Update**: First Friday of next month (automatic)
+**README監査・公開訂正日:** 2026年8月5日
