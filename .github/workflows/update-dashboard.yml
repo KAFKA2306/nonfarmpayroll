@@ -1,140 +1,139 @@
-name: Update Employment Statistics Dashboard
+name: Publish employment data status
 
 on:
-  # Run on first Friday of each month at 10:30 AM EST (employment data release day)
-  schedule:
-    - cron: '30 15 1-7 * 5'  # 15:30 UTC = 10:30 EST, first Friday of month
-  
-  # Allow manual triggering
-  workflow_dispatch:
-    inputs:
-      force_update:
-        description: 'Force update even if no new data'
-        required: false
-        default: 'false'
-        type: boolean
-  
-  # Run on push to main branch (for testing)
+  pull_request:
+    paths:
+      - README.md
+      - .github/workflows/update-dashboard.yml
+      - dashboard.html
+      - dashboard.css
+      - dashboard.js
+      - scripts/**
+      - data_processed/**
   push:
-    branches: [ main, master ]
-    paths-ignore:
-      - 'README.md'
-      - 'docs/**'
-      - '*.md'
+    branches: [main]
+    paths:
+      - README.md
+      - .github/workflows/update-dashboard.yml
+      - dashboard.html
+      - dashboard.css
+      - dashboard.js
+      - scripts/**
+      - data_processed/**
+  schedule:
+    - cron: '30 15 1-7 * 5'
+  workflow_dispatch:
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
 concurrency:
-  group: "pages"
+  group: pages
   cancel-in-progress: false
 
 jobs:
-  collect-data:
+  build-status-page:
     runs-on: ubuntu-latest
-    
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.10'
-        
-    - name: Install Python dependencies
-      run: |
-        pip install --upgrade pip
-        pip install pandas requests numpy pathlib
-        pip install pyarrow  # For feather format
-        
-    - name: Create data directories
-      run: |
-        mkdir -p data_raw/fred_snapshots
-        mkdir -p data_processed
-        
-    - name: Download FRED employment data
-      run: |
-        python scripts/01_download_fred.py
-        
-    - name: Process revision data
-      run: |
-        python scripts/03_merge_revisions.py
-        
-    - name: Prepare dashboard files
-      run: |
-        # Copy dashboard files to docs directory for GitHub Pages
-        mkdir -p docs
-        cp dashboard.html docs/index.html
-        cp dashboard.css docs/
-        cp dashboard.js docs/
-        cp -r data_processed docs/
-        
-        # Create a data timestamp file
-        echo "$(date -u +"%Y-%m-%d %H:%M:%S UTC")" > docs/last_updated.txt
-        
-        # Generate a simple status page
-        cat > docs/status.json << EOF
-        {
-          "status": "operational",
-          "last_updated": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
-          "data_source": "FRED",
-          "workflow_run": "${{ github.run_id }}",
-          "commit_sha": "${{ github.sha }}"
-        }
-        EOF
-        
-    - name: Upload Pages artifact
-      uses: actions/upload-pages-artifact@v3
-      with:
-        path: docs/
-        
-    outputs:
-      data-updated: ${{ steps.check-data.outputs.updated }}
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build fail-closed status page
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p docs
+          generated_at="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+
+          cat > docs/index.html <<EOF
+          <!doctype html>
+          <html lang="ja">
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width,initial-scale=1">
+            <meta name="robots" content="noindex,nofollow">
+            <title>米国雇用統計ダッシュボード — 分析利用不可</title>
+            <style>
+              :root { color-scheme: light dark; font-family: system-ui, sans-serif; }
+              body { margin: 0; background: Canvas; color: CanvasText; }
+              main { max-width: 760px; margin: 0 auto; padding: 48px 24px; }
+              .status { display: inline-block; padding: 6px 10px; border: 1px solid currentColor; border-radius: 999px; font-weight: 700; }
+              h1 { line-height: 1.3; }
+              li { margin: 0.55rem 0; }
+              code { overflow-wrap: anywhere; }
+            </style>
+          </head>
+          <body>
+            <main>
+              <p class="status">分析利用不可</p>
+              <h1>米国雇用統計の改定分析は停止中です</h1>
+              <p>初回公表値、第2回公表値、第3回公表値を一次情報から再現できるvintageデータが、このrepositoryには揃っていません。</p>
+              <p>従来公開していた改定幅、不確実性、品質scoreは、検証済みのBLS改定履歴に基づく結果として確認できなかったため撤回しました。</p>
+              <h2>現在確認できること</h2>
+              <ul>
+                <li>FREDのPAYEMS系列を取得するscriptは存在します。</li>
+                <li>PAYEMSの最新系列だけでは、各月の初回公表値と改定過程を復元できません。</li>
+                <li>旧dashboardのsynthetic・demo・placeholder値は分析、投資判断、政策評価に使用できません。</li>
+              </ul>
+              <h2>再開条件</h2>
+              <ul>
+                <li>BLSまたはALFRED等の一次sourceからvintageを取得すること</li>
+                <li>観測月、公表日、改定段階、source URL、取得日時を保存すること</li>
+                <li>syntheticデータを本番artifactから除外し、回帰testを通すこと</li>
+              </ul>
+              <p>追跡Issue: <code>KAFKA2306/nonfarmpayroll#1</code></p>
+              <p>status generated at: <code>${generated_at}</code></p>
+            </main>
+          </body>
+          </html>
+          EOF
+
+          cat > docs/status.json <<EOF
+          {
+            "status": "unavailable",
+            "reason": "verified_revision_vintages_missing",
+            "analysis_available": false,
+            "legacy_synthetic_artifacts_trusted": false,
+            "generated_at_utc": "${generated_at}",
+            "commit_sha": "${GITHUB_SHA}"
+          }
+          EOF
+
+      - name: Validate status page contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q '分析利用不可' docs/index.html
+          grep -q '"analysis_available": false' docs/status.json
+          grep -q '"legacy_synthetic_artifacts_trusted": false' docs/status.json
+          if grep -Eiq '112\.3|73\.4|17\.1|95/100|99\.9%|fully automated|ready to use' docs/index.html; then
+            echo 'Unverified metric or operational claim found in published page.' >&2
+            exit 1
+          fi
+
+      - name: Upload pull request evidence
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: employment-status-page
+          path: docs
+
+      - name: Upload Pages artifact
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
 
   deploy:
-    needs: collect-data
+    if: github.event_name != 'pull_request'
+    needs: build-status-page
     runs-on: ubuntu-latest
-    
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-      
     steps:
-    - name: Deploy to GitHub Pages
-      id: deployment
-      uses: actions/deploy-pages@v4
-      
-  notify:
-    needs: [collect-data, deploy]
-    runs-on: ubuntu-latest
-    if: always()
-    
-    steps:
-    - name: Create summary
-      run: |
-        echo "## 📊 Employment Statistics Dashboard Update" >> $GITHUB_STEP_SUMMARY
-        echo "" >> $GITHUB_STEP_SUMMARY
-        echo "**Status:** ${{ job.status == 'success' && '✅ Success' || '❌ Failed' }}" >> $GITHUB_STEP_SUMMARY
-        echo "**Time:** $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
-        echo "**Dashboard URL:** https://kafka2306.github.io/nonfarmpayroll/" >> $GITHUB_STEP_SUMMARY
-        echo "" >> $GITHUB_STEP_SUMMARY
-        
-        if [ "${{ needs.collect-data.result }}" == "success" ]; then
-          echo "✅ Data collection completed successfully" >> $GITHUB_STEP_SUMMARY
-        else
-          echo "❌ Data collection failed" >> $GITHUB_STEP_SUMMARY
-        fi
-        
-        if [ "${{ needs.deploy.result }}" == "success" ]; then
-          echo "✅ Dashboard deployed successfully" >> $GITHUB_STEP_SUMMARY
-        else
-          echo "❌ Dashboard deployment failed" >> $GITHUB_STEP_SUMMARY
-        fi
-        
-        echo "" >> $GITHUB_STEP_SUMMARY
-        echo "**Next Update:** First Friday of next month" >> $GITHUB_STEP_SUMMARY
+      - name: Deploy status page
+        id: deployment
+        uses: actions/deploy-pages@v4
