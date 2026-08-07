@@ -1,4 +1,4 @@
-name: Publish employment data status
+name: Publish employment data status and verified level API
 
 on:
   pull_request:
@@ -9,7 +9,10 @@ on:
       - dashboard.css
       - dashboard.js
       - scripts/**
+      - tests/**
       - data_processed/**
+      - data_verified/**
+      - docs/**
   push:
     branches: [main]
     paths:
@@ -19,7 +22,10 @@ on:
       - dashboard.css
       - dashboard.js
       - scripts/**
+      - tests/**
       - data_processed/**
+      - data_verified/**
+      - docs/**
   schedule:
     - cron: '30 15 1-7 * 5'
   workflow_dispatch:
@@ -30,15 +36,22 @@ permissions:
   id-token: write
 
 concurrency:
-  group: pages
-  cancel-in-progress: false
+  group: pages-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build-status-page:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Test verified BLS data builder
+        run: |
+          set -euo pipefail
+          python -m py_compile scripts/build_bls_level_api.py tests/test_bls_level_api.py
+          python -m unittest tests.test_bls_level_api -v
 
       - name: Build fail-closed status page
         shell: bash
@@ -54,11 +67,11 @@ jobs:
             <meta charset="utf-8">
             <meta name="viewport" content="width=device-width,initial-scale=1">
             <meta name="robots" content="noindex,nofollow">
-            <title>米国雇用統計ダッシュボード — 分析利用不可</title>
+            <title>米国雇用統計データ — 改定分析停止中</title>
             <style>
               :root { color-scheme: light dark; font-family: system-ui, sans-serif; }
               body { margin: 0; background: Canvas; color: CanvasText; }
-              main { max-width: 760px; margin: 0 auto; padding: 48px 24px; }
+              main { max-width: 820px; margin: 0 auto; padding: 48px 24px; }
               .status { display: inline-block; padding: 6px 10px; border: 1px solid currentColor; border-radius: 999px; font-weight: 700; }
               h1 { line-height: 1.3; }
               li { margin: 0.55rem 0; }
@@ -67,23 +80,23 @@ jobs:
           </head>
           <body>
             <main>
-              <p class="status">分析利用不可</p>
-              <h1>米国雇用統計の改定分析は停止中です</h1>
-              <p>初回公表値、第2回公表値、第3回公表値を一次情報から再現できるvintageデータが、このrepositoryには揃っていません。</p>
-              <p>従来公開していた改定幅、不確実性、品質scoreは、検証済みのBLS改定履歴に基づく結果として確認できなかったため撤回しました。</p>
-              <h2>現在確認できること</h2>
+              <p class="status">改定分析は利用不可</p>
+              <h1>検証済みBLS水準系列の配布を再開しました</h1>
+              <p>初回・第2回・第3回公表値を再現するrelease-vintageデータは未復旧のため、改定幅や不確実性の分析は引き続き停止しています。</p>
+              <p>一方、BLS Current Employment Statisticsの公式flat fileから、Total nonfarm employment（CES0000000001）の最新利用可能な水準系列を取得し、JSON/CSVとして配布します。</p>
+              <h2>利用可能なデータ</h2>
               <ul>
-                <li>FREDのPAYEMS系列を取得するscriptは存在します。</li>
-                <li>PAYEMSの最新系列だけでは、各月の初回公表値と改定過程を復元できません。</li>
+                <li><a href="api/v1/manifest.json">API manifest</a></li>
+                <li><a href="api/v1/total-nonfarm.json">Total nonfarm JSON</a></li>
+                <li><a href="api/v1/total-nonfarm.csv">Total nonfarm CSV</a></li>
+              </ul>
+              <h2>重要な制約</h2>
+              <ul>
+                <li>このAPIは各観測月の最新利用可能値であり、公表時点vintageの履歴ではありません。</li>
+                <li>改定段階の分析には使用できません。</li>
                 <li>旧dashboardのsynthetic・demo・placeholder値は分析、投資判断、政策評価に使用できません。</li>
               </ul>
-              <h2>再開条件</h2>
-              <ul>
-                <li>BLSまたはALFRED等の一次sourceからvintageを取得すること</li>
-                <li>観測月、公表日、改定段階、source URL、取得日時を保存すること</li>
-                <li>syntheticデータを本番artifactから除外し、回帰testを通すこと</li>
-              </ul>
-              <p>追跡Issue: <code>KAFKA2306/nonfarmpayroll#1</code></p>
+              <p>source: U.S. Bureau of Labor Statistics</p>
               <p>status generated at: <code>${generated_at}</code></p>
             </main>
           </body>
@@ -92,21 +105,59 @@ jobs:
 
           cat > docs/status.json <<EOF
           {
-            "status": "unavailable",
+            "status": "partial",
             "reason": "verified_revision_vintages_missing",
             "analysis_available": false,
+            "revision_vintage_available": false,
+            "verified_level_series_available": true,
             "legacy_synthetic_artifacts_trusted": false,
             "generated_at_utc": "${generated_at}",
             "commit_sha": "${GITHUB_SHA}"
           }
           EOF
 
+      - name: Fetch official BLS Total nonfarm series and build API
+        run: |
+          set -euo pipefail
+          python scripts/build_bls_level_api.py --output-dir docs/api/v1
+
+      - name: Validate published API contract
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import csv, hashlib, json
+          from pathlib import Path
+          root = Path('docs/api/v1')
+          manifest = json.loads((root / 'manifest.json').read_text())
+          data = json.loads((root / 'total-nonfarm.json').read_text())
+          assert manifest['analysis_available'] is False
+          assert manifest['revision_vintage_available'] is False
+          assert manifest['level_series_available'] is True
+          assert data['series']['series_id'] == 'CES0000000001'
+          assert data['record_count'] == len(data['records'])
+          assert data['records'] == sorted(data['records'], key=lambda x: x['observation_date'])
+          assert len({r['observation_date'] for r in data['records']}) == len(data['records'])
+          with (root / 'total-nonfarm.csv').open(newline='', encoding='utf-8') as handle:
+              assert sum(1 for _ in csv.DictReader(handle)) == data['record_count']
+          for name, meta in manifest['files'].items():
+              payload = (root / name).read_bytes()
+              assert len(payload) == meta['bytes']
+              assert hashlib.sha256(payload).hexdigest() == meta['sha256']
+          print(json.dumps({
+              'records': data['record_count'],
+              'first': data['first_observation'],
+              'last': data['last_observation'],
+              'source_sha256': data['source']['source_sha256'],
+          }))
+          PY
+
       - name: Validate status page contract
         shell: bash
         run: |
           set -euo pipefail
-          grep -q '分析利用不可' docs/index.html
+          grep -q '改定分析は利用不可' docs/index.html
           grep -q '"analysis_available": false' docs/status.json
+          grep -q '"verified_level_series_available": true' docs/status.json
           grep -q '"legacy_synthetic_artifacts_trusted": false' docs/status.json
           if grep -Eiq '112\.3|73\.4|17\.1|95/100|99\.9%|fully automated|ready to use' docs/index.html; then
             echo 'Unverified metric or operational claim found in published page.' >&2
@@ -117,8 +168,9 @@ jobs:
         if: github.event_name == 'pull_request'
         uses: actions/upload-artifact@v4
         with:
-          name: employment-status-page
+          name: employment-status-and-bls-api
           path: docs
+          retention-days: 30
 
       - name: Upload Pages artifact
         if: github.event_name != 'pull_request'
@@ -134,6 +186,6 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Deploy status page
+      - name: Deploy status page and verified API
         id: deployment
         uses: actions/deploy-pages@v4
