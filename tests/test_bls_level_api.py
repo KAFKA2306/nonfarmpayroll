@@ -10,6 +10,7 @@ from scripts.build_bls_level_api import build_payload, parse_series, write_outpu
 
 
 SAMPLE = b"series_id\tyear\tperiod\tvalue\tfootnote_codes\nCES0000000001\t2026\tM05\t158927\tP\nCES0000000001\t2026\tM06\t158984\tP\nCES0500000001\t2026\tM06\t136000\t\n"
+SOURCE = {"publisher": "U.S. Bureau of Labor Statistics", "url": "https://download.bls.gov/example", "retrieved_at_utc": "2026-08-07T07:17:36Z", "source_sha256": "a" * 64, "license": "public domain"}
 
 
 class BLSLevelApiTests(unittest.TestCase):
@@ -26,7 +27,7 @@ class BLSLevelApiTests(unittest.TestCase):
             parse_series(duplicate)
 
     def test_manifest_matches_generated_files(self) -> None:
-        payload = build_payload(SAMPLE, "2026-08-07T07:17:36Z")
+        payload = build_payload(parse_series(SAMPLE), SOURCE)
         with tempfile.TemporaryDirectory() as tmp:
             output = Path(tmp)
             write_outputs(payload, output)
