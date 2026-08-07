@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "dataset_role": "source_snapshot_evidence",
+  "series_id": "CES0000000001",
+  "series_title": "Total nonfarm employment",
+  "survey": "Current Employment Statistics",
+  "unit": "thousands of persons",
+  "seasonal_adjustment": "seasonally adjusted",
+  "source_url": "https://download.bls.gov/pub/time.series/ce/ce.data.00a.TotalNonfarm.Employment",
+  "source_sha256": "7f752c4bbfaa842f8b68c310b75bd11b8a3011a5cef2d51bde621fd54e838b79",
+  "retrieved_at_utc": "2026-08-07T07:17:36Z",
+  "record_count": 1050,
+  "first_observation": "1939-01-01",
+  "last_observation": "2026-06-01",
+  "latest_record": {
+    "observation_date": "2026-06-01",
+    "value_thousands": 158984,
+    "preliminary": true
+  },
+  "previous_record": {
+    "observation_date": "2026-05-01",
+    "value_thousands": 158927,
+    "preliminary": true
+  },
+  "license": "U.S. federal government public domain; cite the U.S. Bureau of Labor Statistics as source",
+  "copyright_policy_url": "https://www.bls.gov/opub/copyright-information.htm",
+  "terms_url": "https://www.bls.gov/developers/termsOfService.htm",
+  "warning": "This snapshot describes the latest available level series at retrieval time. It is not release-vintage history and must not be used for revision-stage analysis."
+}
