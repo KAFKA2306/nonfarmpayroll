@@ -1,0 +1,4 @@
+observation_month,from_stage,to_stage,from_value_thousands,to_value_thousands,revision_thousands,release_date,source_document_id
+2026-05,release1,release2,172,129,-43,2026-07-02,USDL-26-1125
+2026-05,release2,release3,129,63,-66,2026-08-07,USDL-26-1291
+2026-06,release1,release2,57,20,-37,2026-08-07,USDL-26-1291
