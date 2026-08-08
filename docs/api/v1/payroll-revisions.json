@@ -1,0 +1,37 @@
+{
+  "schema_version": "1.0",
+  "analysis_available": false,
+  "revision_record_count": 3,
+  "records": [
+    {
+      "observation_month": "2026-05",
+      "from_stage": "release1",
+      "to_stage": "release2",
+      "from_value_thousands": 172,
+      "to_value_thousands": 129,
+      "revision_thousands": -43,
+      "release_date": "2026-07-02",
+      "source_document_id": "USDL-26-1125"
+    },
+    {
+      "observation_month": "2026-05",
+      "from_stage": "release2",
+      "to_stage": "release3",
+      "from_value_thousands": 129,
+      "to_value_thousands": 63,
+      "revision_thousands": -66,
+      "release_date": "2026-08-07",
+      "source_document_id": "USDL-26-1291"
+    },
+    {
+      "observation_month": "2026-06",
+      "from_stage": "release1",
+      "to_stage": "release2",
+      "from_value_thousands": 57,
+      "to_value_thousands": 20,
+      "revision_thousands": -37,
+      "release_date": "2026-08-07",
+      "source_document_id": "USDL-26-1291"
+    }
+  ]
+}

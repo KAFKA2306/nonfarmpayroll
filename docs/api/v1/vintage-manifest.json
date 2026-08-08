@@ -1,0 +1,35 @@
+{
+  "schema_version": "1.0",
+  "dataset_id": "bls-total-nonfarm-monthly-change-release-vintages",
+  "analysis_available": false,
+  "coverage_status": "partial_verified_vintages",
+  "vintage_record_count": 6,
+  "revision_record_count": 3,
+  "first_observation": "2026-05",
+  "last_observation": "2026-07",
+  "source_snapshot_sha256": "74634f4ecb1bc6a9c17a39b58266f459d2834f1b77dbc9c250da1b4cc3358ca9",
+  "source_urls": [
+    "https://www.bls.gov/news.release/archives/empsit_06052026.htm",
+    "https://www.bls.gov/news.release/archives/empsit_07022026.pdf",
+    "https://www.bls.gov/news.release/empsit.nr0.htm"
+  ],
+  "license": {
+    "name": "U.S. federal government public domain",
+    "url": "https://www.bls.gov/bls/linksite.htm",
+    "note": "BLS asks users to cite the Bureau of Labor Statistics as the source."
+  },
+  "files": {
+    "payroll-vintages.json": {
+      "bytes": 1792,
+      "sha256": "df143d0f3a074ac0e66b32a42195a0e7eb3626c59664cbed7867fefcba619632"
+    },
+    "payroll-revisions.json": {
+      "bytes": 986,
+      "sha256": "1d51f2bd87de9ad7b7abaefdafc795755fe448e2b92fb3977d2f0d693caa52c9"
+    },
+    "payroll-revisions.csv": {
+      "bytes": 312,
+      "sha256": "06e0f67e40bb6061895f30e241cc728137daec914e3770c60f8c172b39abacaf"
+    }
+  }
+}

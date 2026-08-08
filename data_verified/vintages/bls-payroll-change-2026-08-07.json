@@ -1,0 +1,74 @@
+{
+  "schema_version": "1.0",
+  "dataset_id": "bls-total-nonfarm-monthly-change-release-vintages",
+  "series_id": "CES0000000001",
+  "metric": "total_nonfarm_payroll_employment_monthly_change",
+  "unit": "thousand_persons",
+  "seasonal_adjustment": "seasonally_adjusted",
+  "retrieved_at": "2026-08-08T05:20:00Z",
+  "publisher": "U.S. Bureau of Labor Statistics",
+  "license": {
+    "name": "U.S. federal government public domain",
+    "url": "https://www.bls.gov/bls/linksite.htm",
+    "note": "BLS asks users to cite the Bureau of Labor Statistics as the source."
+  },
+  "coverage": {
+    "first_observation": "2026-05",
+    "last_observation": "2026-07",
+    "release_dates": [
+      "2026-06-05",
+      "2026-07-02",
+      "2026-08-07"
+    ]
+  },
+  "records": [
+    {
+      "observation_month": "2026-05",
+      "release_date": "2026-06-05",
+      "revision_stage": "release1",
+      "value_thousands": 172,
+      "source_document_id": "USDL-26-0786",
+      "source_url": "https://www.bls.gov/news.release/archives/empsit_06052026.htm"
+    },
+    {
+      "observation_month": "2026-05",
+      "release_date": "2026-07-02",
+      "revision_stage": "release2",
+      "value_thousands": 129,
+      "source_document_id": "USDL-26-1125",
+      "source_url": "https://www.bls.gov/news.release/archives/empsit_07022026.pdf"
+    },
+    {
+      "observation_month": "2026-05",
+      "release_date": "2026-08-07",
+      "revision_stage": "release3",
+      "value_thousands": 63,
+      "source_document_id": "USDL-26-1291",
+      "source_url": "https://www.bls.gov/news.release/empsit.nr0.htm"
+    },
+    {
+      "observation_month": "2026-06",
+      "release_date": "2026-07-02",
+      "revision_stage": "release1",
+      "value_thousands": 57,
+      "source_document_id": "USDL-26-1125",
+      "source_url": "https://www.bls.gov/news.release/archives/empsit_07022026.pdf"
+    },
+    {
+      "observation_month": "2026-06",
+      "release_date": "2026-08-07",
+      "revision_stage": "release2",
+      "value_thousands": 20,
+      "source_document_id": "USDL-26-1291",
+      "source_url": "https://www.bls.gov/news.release/empsit.nr0.htm"
+    },
+    {
+      "observation_month": "2026-07",
+      "release_date": "2026-08-07",
+      "revision_stage": "release1",
+      "value_thousands": -23,
+      "source_document_id": "USDL-26-1291",
+      "source_url": "https://www.bls.gov/news.release/empsit.nr0.htm"
+    }
+  ]
+}

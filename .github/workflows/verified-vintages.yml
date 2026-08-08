@@ -1,0 +1,75 @@
+name: Verified BLS payroll vintages
+
+on:
+  pull_request:
+    paths:
+      - data_verified/vintages/**
+      - scripts/build_bls_vintage_api.py
+      - tests/test_bls_vintage_api.py
+      - docs/api/v1/payroll-*.json
+      - docs/api/v1/payroll-*.csv
+      - docs/api/v1/vintage-manifest.json
+      - .github/workflows/verified-vintages.yml
+  push:
+    branches: [main]
+    paths:
+      - data_verified/vintages/**
+      - scripts/build_bls_vintage_api.py
+      - tests/test_bls_vintage_api.py
+      - docs/api/v1/payroll-*.json
+      - docs/api/v1/payroll-*.csv
+      - docs/api/v1/vintage-manifest.json
+      - .github/workflows/verified-vintages.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile and test
+        run: |
+          set -euo pipefail
+          python -m py_compile scripts/build_bls_vintage_api.py tests/test_bls_vintage_api.py
+          python -m unittest tests.test_bls_vintage_api -v
+      - name: Rebuild deterministic distribution
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/vintage-api
+          python scripts/build_bls_vintage_api.py --output-dir /tmp/vintage-api
+          diff -u docs/api/v1/payroll-vintages.json /tmp/vintage-api/payroll-vintages.json
+          diff -u docs/api/v1/payroll-revisions.json /tmp/vintage-api/payroll-revisions.json
+          diff -u docs/api/v1/payroll-revisions.csv /tmp/vintage-api/payroll-revisions.csv
+          diff -u docs/api/v1/vintage-manifest.json /tmp/vintage-api/vintage-manifest.json
+      - name: Smoke test manifest checksums
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          root = Path('docs/api/v1')
+          manifest = json.loads((root / 'vintage-manifest.json').read_text())
+          assert manifest['analysis_available'] is False
+          assert manifest['coverage_status'] == 'partial_verified_vintages'
+          assert manifest['vintage_record_count'] == 6
+          assert manifest['revision_record_count'] == 3
+          for name, meta in manifest['files'].items():
+              payload = (root / name).read_bytes()
+              assert len(payload) == meta['bytes']
+              assert hashlib.sha256(payload).hexdigest() == meta['sha256']
+          print('verified vintage API smoke test passed')
+          PY
+      - name: Upload verified vintage API
+        uses: actions/upload-artifact@v4
+        with:
+          name: verified-bls-payroll-vintages
+          path: |
+            docs/api/v1/payroll-vintages.json
+            docs/api/v1/payroll-revisions.json
+            docs/api/v1/payroll-revisions.csv
+            docs/api/v1/vintage-manifest.json
+          retention-days: 30
