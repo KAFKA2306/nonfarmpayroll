@@ -1,106 +1,51 @@
-name: Dashboard Health Check
+name: Published status contract health check
 
 on:
-  # Run daily to ensure dashboard is operational
   schedule:
-    - cron: '0 12 * * *'  # Daily at 12:00 UTC
-  
-  # Manual trigger
+    - cron: '0 12 * * *'
   workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   health-check:
     runs-on: ubuntu-latest
-    
+    timeout-minutes: 5
     steps:
-    - name: Check dashboard availability
-      run: |
-        # Check if the dashboard is accessible
-        response=$(curl -s -o /dev/null -w "%{http_code}" https://kafka2306.github.io/nonfarmpayroll/)
-        
-        if [ "$response" -eq 200 ]; then
-          echo "✅ Dashboard is accessible (HTTP $response)"
-          echo "dashboard_status=healthy" >> $GITHUB_ENV
-        else
-          echo "❌ Dashboard is not accessible (HTTP $response)"
-          echo "dashboard_status=unhealthy" >> $GITHUB_ENV
-          exit 1
-        fi
-        
-    - name: Check data freshness
-      run: |
-        # Download and check last update time
-        last_updated=$(curl -s https://kafka2306.github.io/nonfarmpayroll/last_updated.txt || echo "unknown")
-        echo "Last updated: $last_updated"
-        
-        # Check if data is older than 40 days (employment data is monthly)
-        if [ "$last_updated" != "unknown" ]; then
-          last_update_timestamp=$(date -d "$last_updated" +%s 2>/dev/null || echo 0)
-          current_timestamp=$(date +%s)
-          age_days=$(( (current_timestamp - last_update_timestamp) / 86400 ))
-          
-          echo "Data age: $age_days days"
-          
-          if [ $age_days -gt 40 ]; then
-            echo "⚠️ Data is stale (older than 40 days)"
-            echo "Consider running the update workflow"
-            echo "data_status=stale" >> $GITHUB_ENV
-          else
-            echo "✅ Data is fresh"
-            echo "data_status=fresh" >> $GITHUB_ENV
+      - name: Fetch published Pages contract
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location \
+            https://kafka2306.github.io/nonfarmpayroll/ \
+            --output /tmp/index.html
+          curl --fail --silent --show-error --location \
+            https://kafka2306.github.io/nonfarmpayroll/status.json \
+            --output /tmp/status.json
+
+      - name: Validate fail-closed publication
+        run: |
+          set -euo pipefail
+          grep -q '改定分析は利用不可' /tmp/index.html
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          status = json.loads(Path('/tmp/status.json').read_text(encoding='utf-8'))
+          assert status['analysis_available'] is False
+          assert status['legacy_synthetic_artifacts_trusted'] is False
+          print(json.dumps(status, ensure_ascii=False, sort_keys=True))
+          PY
+
+          if grep -Eiq '112\.3|73\.4|\+17K|17\.1|95/100|99\.9%|fully automated|ready to use' /tmp/index.html; then
+            echo '::error::Retracted or unverified claim is visible on GitHub Pages.' >&2
+            exit 1
           fi
-        else
-          echo "❌ Cannot determine data age"
-          echo "data_status=unknown" >> $GITHUB_ENV
-        fi
-        
-    - name: Create health report
-      run: |
-        cat > health_report.md << EOF
-        # 🏥 Dashboard Health Report
-        
-        **Date:** $(date -u '+%Y-%m-%d %H:%M:%S UTC')
-        
-        ## Status Summary
-        - **Dashboard:** ${{ env.dashboard_status == 'healthy' && '✅ Healthy' || '❌ Unhealthy' }}
-        - **Data:** ${{ env.data_status == 'fresh' && '✅ Fresh' || env.data_status == 'stale' && '⚠️ Stale' || '❌ Unknown' }}
-        
-        ## Dashboard URL
-        https://kafka2306.github.io/nonfarmpayroll/
-        
-        ## Next Actions
-        EOF
-        
-        if [ "${{ env.dashboard_status }}" != "healthy" ]; then
-          echo "- 🔧 Investigate dashboard deployment issues" >> health_report.md
-        fi
-        
-        if [ "${{ env.data_status }}" == "stale" ]; then
-          echo "- 📊 Run data update workflow" >> health_report.md
-        fi
-        
-        if [ "${{ env.dashboard_status }}" == "healthy" ] && [ "${{ env.data_status }}" == "fresh" ]; then
-          echo "- 🎉 No action required - system is healthy" >> health_report.md
-        fi
-        
-        echo "" >> health_report.md
-        echo "---" >> health_report.md
-        echo "*Automated health check completed*" >> health_report.md
-        
-        # Output to step summary
-        cat health_report.md >> $GITHUB_STEP_SUMMARY
-        
-    - name: Trigger update if needed
-      if: env.data_status == 'stale'
-      uses: actions/github-script@v7
-      with:
-        script: |
-          // Trigger the main update workflow if data is stale
-          await github.rest.actions.createWorkflowDispatch({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            workflow_id: 'update-dashboard.yml',
-            ref: 'main'
-          });
-          
-          console.log('🚀 Triggered dashboard update workflow due to stale data');
+
+      - name: Health summary
+        run: |
+          echo '## Published status contract' >> "$GITHUB_STEP_SUMMARY"
+          echo '- HTTP fetch: PASS' >> "$GITHUB_STEP_SUMMARY"
+          echo '- analysis_available=false: PASS' >> "$GITHUB_STEP_SUMMARY"
+          echo '- legacy_synthetic_artifacts_trusted=false: PASS' >> "$GITHUB_STEP_SUMMARY"
+          echo '- retracted metrics absent: PASS' >> "$GITHUB_STEP_SUMMARY"
