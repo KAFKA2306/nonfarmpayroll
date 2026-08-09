@@ -1,11 +1,69 @@
-# nonfarmpayroll — 米国雇用統計改定分析の停止状態
+# nonfarmpayroll — 検証済みBLSデータのみ公開
 
-> **状態: 分析利用不可 / 公開訂正中**  
-> このリポジトリで従来公開していた雇用統計の改定幅、不確実性、品質scoreは、検証済みのBLS公表vintageに基づく結果として確認できませんでした。現在は数値分析を停止し、GitHub Pagesにはstatusだけを公開します。
+> **状態: 長期の改定分析は利用不可 / 一次確認済みrelease vintageは部分公開**  
+> 旧dashboardで公開していた平均改定、不確実性、品質score、稼働率などの固定値は、検証済みBLS公表vintageから再現できないため撤回しています。
 
-## 重要な訂正
+## 現在の公開契約
 
-旧READMEとdashboardでは、次の値を実測結果として表示していました。
+GitHub Pagesは `.github/workflows/update-dashboard.yml` だけがdeployできるfail-closed構成です。
+
+- `analysis_available: false`
+- `legacy_synthetic_artifacts_trusted: false`
+- 最新利用可能なBLS CES Total nonfarm level seriesをJSON/CSVで配布
+- BLS Employment Situation公表資料から一次確認したrelease vintageを部分配布
+- coverageが不十分なため、長期の平均改定幅・不確実性・品質score等は公開しない
+- 旧`dashboard.html` / `dashboard.js` / synthetic CSVをPages artifactへ含めない
+
+公開先:
+
+```text
+https://kafka2306.github.io/nonfarmpayroll/
+```
+
+公開URLがHTTP 200であることだけでは正常判定しません。`status.json`で`analysis_available=false`かつ`legacy_synthetic_artifacts_trusted=false`であることを確認してください。
+
+## 検証済みデータ
+
+### 最新利用可能な水準系列
+
+BLS Current Employment StatisticsのTotal nonfarm employment (`CES0000000001`) を公式BLS sourceから取得し、canonical workflowで再生成します。
+
+公開artifact:
+
+- `api/v1/manifest.json`
+- `api/v1/total-nonfarm.json`
+- `api/v1/total-nonfarm.csv`
+
+この系列は各観測月の最新利用可能値であり、当時の初回・第2回・第3回公表値を単独では復元しません。
+
+### release vintage — partial coverage
+
+`data_verified/vintages/bls-payroll-change-2026-08-07.json`には、BLS Employment Situationの公表資料をsourceとして、2026年5月〜7月について一次確認できた公表値を保存しています。
+
+現在の収録は6 recordsです。
+
+- 2026-05: release1 `+172K` / release2 `+129K` / release3 `+63K`
+- 2026-06: release1 `+57K` / release2 `+20K`
+- 2026-07: release1 `-23K`
+
+source document:
+
+- 2026-06-05 Employment Situation — `USDL-26-0786`
+- 2026-07-02 Employment Situation — `USDL-26-1125`
+- 2026-08-07 Employment Situation — `USDL-26-1291`
+
+公開artifact:
+
+- `api/v1/vintage-manifest.json`
+- `api/v1/payroll-vintages.json`
+- `api/v1/payroll-revisions.json`
+- `api/v1/payroll-revisions.csv`
+
+このcoverageは部分的です。数か月のverified recordsを、1939年以降の長期revision分布や不確実性推定へ外挿しません。
+
+## 撤回した旧主張
+
+旧README/dashboardには、検証済みvintageから再現できない次の主張がありました。
 
 - 平均改定: 約`+17K`
 - 改定の標準偏差: 約`73.4K`
@@ -14,83 +72,11 @@
 - uptime: `99.9%`
 - monthly workflow成功率: `95%+`
 
-これらの主張を撤回します。
+これらは**撤回済みの旧表示**であり、現在の分析結果ではありません。
 
-default branchの監査で、次を確認しました。
+## legacy artifact
 
-1. `data_processed/nfp_revisions.csv`の`release1`、`release2`、`release3`には、1939年から小数を含む人工的な値が保存されている。
-2. `dashboard.js`はdata fileの読込に失敗すると、`Math.random()`でdemo revisionを生成する。
-3. 同じdemo処理が、平均改定、改定標準偏差、合成不確実性を固定値として作る。
-4. `scripts/03_merge_revisions.py`はBLS release dataがない場合、`release1 = final`というplaceholderを作る。
-5. repositoryには`data_processed/bls_releases.csv`または対応するparquetを確認できない。
-6. monthly workflowはFRED PAYEMSを取得するが、BLS初回・第2回・第3回公表値のvintageを取得しない。
-
-したがって、既存の`nfp_revisions.csv`と`summary_report.json`は、実測BLS改定履歴の正準dataではありません。研究、投資判断、政策評価、統計的主張に使用しないでください。
-
-## 現在公開する内容
-
-`.github/workflows/update-dashboard.yml`はfail-closedへ変更しました。
-
-- pull requestではstatus page contractを検証する
-- mainへのmerge後はstatus-only Pagesをdeployする
-- 旧`dashboard.html`、`dashboard.js`、synthetic CSVを公開artifactへ含めない
-- 公開statusは`analysis_available: false`を返す
-- 検証済みvintageがない限り、改定統計を表示しない
-
-公開先:
-
-```text
-https://kafka2306.github.io/nonfarmpayroll/
-```
-
-公開URLがHTTP 200でも、分析が利用可能であることを意味しません。`status.json`の状態を確認してください。
-
-## 現在確認できる実装
-
-| 項目 | 状態 |
-|---|---|
-| FRED PAYEMS取得script | 存在する |
-| latest-vintageの雇用者数系列 | 取得可能 |
-| BLS初回公表値の履歴 | 正準入力なし |
-| 第2回・第3回公表値の履歴 | 正準入力なし |
-| 改定幅の実測集計 | 利用不可 |
-| 不確実性の実測推定 | 利用不可 |
-| 公開dashboard | status-onlyへ停止 |
-
-## FRED PAYEMSだけでは不足する理由
-
-現在取得しているPAYEMS系列は、各観測月について現在利用できる系列値です。これだけでは、当時の初回公表値、第2回公表値、第3回公表値、その後のbenchmark revisionを区別できません。
-
-改定分析には、少なくとも次の列を持つvintage dataが必要です。
-
-```text
-series_id
-observation_date
-release_date
-revision_stage
-value
-unit
-seasonal_adjustment
-source_url
-retrieved_at
-source_document_id
-```
-
-## 本復旧の条件
-
-1. BLSまたはALFRED等の一次sourceから公表vintageを取得する
-2. observation dateとrelease dateを分離する
-3. 初回、第2回、第3回、benchmark revisionを機械的に識別する
-4. raw vintageを改変せず保存し、derived metricsと分離する
-5. source URL、取得日時、document ID、checksumを保存する
-6. synthetic・demo・placeholder dataをproduction artifactから除外する
-7. revision計算、単位、欠損、重複、期間整合のtestを追加する
-8. READMEとdashboardの数値をraw vintageから再生成する
-9. 公開Pagesのcommit SHAとdata checksumを表示する
-
-## 旧artifactの扱い
-
-次のfileはIncidentの調査証拠として残っていますが、正準分析結果ではありません。
+次のfileはIncidentの調査証拠としてrepositoryに残っていますが、正準分析結果ではありません。
 
 ```text
 data_processed/nfp_revisions.csv
@@ -100,22 +86,34 @@ data_processed/summary_report.json
 dashboard.js
 ```
 
-これらを削除せず残す場合も、再公開・再計算・比較の入力に使用してはいけません。
+これらをproduction Pagesへ再公開したり、verified analysisの入力へ昇格したりしてはいけません。
 
-## 検証
+## CI / publication safety
 
-status-only workflowは次を検査します。
+canonical workflowは次を検証します。
 
-- 公開HTMLに「分析利用不可」が含まれる
-- `analysis_available`が`false`
-- legacy synthetic artifactを信頼しない状態である
-- 撤回済みの固定数値や稼働保証が公開HTMLへ再混入していない
+1. BLS level API builderとrelease-vintage API builderのunit test
+2. deterministic API rebuild
+3. manifest checksum
+4. public pageに`改定分析は利用不可`が含まれること
+5. `analysis_available=false`
+6. legacy synthetic artifactを信頼しないこと
+7. 撤回済み固定値や`fully automated`等の旧運用保証をpublic pageへ再混入させないこと
+8. canonical workflow以外が`deploy-pages` / `upload-pages-artifact`を使用していないこと
 
-## 関連Issue
+`.github/workflows/deploy-static.yml`と`.github/workflows/initial-setup.yml`はretiredで、Pages deploy権限を持ちません。health checkもHTTP 200だけではなく公開status contractを検証します。
+
+## 本復旧の残条件
+
+長期の改定分析を再開するには、十分な期間についてBLS/一次公表資料からrelease vintageを拡充し、observation date / release date / revision stage / source documentを保持した上で、raw vintageからsummaryを再計算する必要があります。
+
+本repositoryは、coverage不足を数値で埋めず、検証できない場合はfail closedにします。
+
+## 関連
 
 - Incident: https://github.com/KAFKA2306/nonfarmpayroll/issues/1
-- 全repository README監査: https://github.com/KAFKA2306/com/issues/3
+- BLS Employment Situation archive: https://www.bls.gov/bls/news-release/empsit.htm
+- BLS current Employment Situation: https://www.bls.gov/news.release/empsit.nr0.htm
 
-本リポジトリの出力は投資助言、売買推奨、政策判断の根拠ではありません。
-
-**README監査・公開訂正日:** 2026年8月5日
+**公開訂正:** 2026-08-05  
+**partial verified vintages更新:** 2026-08-08
