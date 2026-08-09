@@ -1,0 +1,13 @@
+title: nonfarmpayroll
+
+# Legacy files are retained in Git only as incident evidence.
+# They must never be copied into the public GitHub Pages artifact.
+exclude:
+  - dashboard.html
+  - dashboard.css
+  - dashboard.js
+  - data_processed
+  - data_raw
+  - scripts
+  - tests
+  - requirements.txt
