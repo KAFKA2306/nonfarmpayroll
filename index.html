@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>米国雇用統計データ — 検証済みデータのみ公開</title>
+  <style>
+    :root { color-scheme: light dark; font-family: system-ui, sans-serif; }
+    body { margin: 0; background: Canvas; color: CanvasText; }
+    main { max-width: 820px; margin: 0 auto; padding: 48px 24px; }
+    .status { display: inline-block; padding: 6px 10px; border: 1px solid currentColor; border-radius: 999px; font-weight: 700; }
+    h1 { line-height: 1.3; }
+    li { margin: 0.55rem 0; }
+    code { overflow-wrap: anywhere; }
+  </style>
+</head>
+<body>
+  <main>
+    <p class="status">改定分析は利用不可</p>
+    <h1>検証済みBLSデータのみを公開しています</h1>
+    <p>Current Employment Statisticsの最新利用可能な水準系列と、BLS Employment Situationの公表資料から一次確認したrelease vintageを部分公開しています。</p>
+    <p>release vintageのcoverageはまだ限定的です。長期の平均改定幅、不確実性、品質scoreなどの集計は公開していません。</p>
+
+    <h2>現在の状態</h2>
+    <ul>
+      <li><code>analysis_available = false</code></li>
+      <li><code>revision_vintage_coverage = partial</code></li>
+      <li><code>legacy_synthetic_artifacts_trusted = false</code></li>
+    </ul>
+
+    <h2>検証済みrelease vintage</h2>
+    <p>2026年5月〜7月について、BLS Employment Situationの公表資料に紐づく6 recordsをrepositoryで保持しています。長期revision分布を表すものではありません。</p>
+    <ul>
+      <li><a href="docs/api/v1/vintage-manifest.json">release vintage manifest</a></li>
+      <li><a href="docs/api/v1/payroll-vintages.json">release vintages JSON</a></li>
+      <li><a href="docs/api/v1/payroll-revisions.json">verified revisions JSON</a></li>
+      <li><a href="docs/api/v1/payroll-revisions.csv">verified revisions CSV</a></li>
+    </ul>
+
+    <h2>重要な制約</h2>
+    <ul>
+      <li>旧dashboardのsynthetic・demo・placeholder値は、分析・投資判断・政策評価に使用できません。</li>
+      <li>coverage不足を推測値で補完しません。</li>
+      <li>十分な一次公表履歴が揃うまで、長期の改定統計はfail closedのままです。</li>
+    </ul>
+
+    <p>source: U.S. Bureau of Labor Statistics</p>
+    <p><a href="status.json">machine-readable status</a></p>
+  </main>
+</body>
+</html>
