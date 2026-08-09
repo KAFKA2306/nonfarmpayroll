@@ -1,16 +1,15 @@
-name: Publish employment data status and verified level API
+name: Publish verified employment data status
 
 on:
   pull_request:
     paths:
       - README.md
       - .github/workflows/update-dashboard.yml
-      - dashboard.html
-      - dashboard.css
-      - dashboard.js
+      - .github/workflows/deploy-static.yml
+      - .github/workflows/initial-setup.yml
+      - .github/workflows/health-check.yml
       - scripts/**
       - tests/**
-      - data_processed/**
       - data_verified/**
       - docs/**
   push:
@@ -18,12 +17,11 @@ on:
     paths:
       - README.md
       - .github/workflows/update-dashboard.yml
-      - dashboard.html
-      - dashboard.css
-      - dashboard.js
+      - .github/workflows/deploy-static.yml
+      - .github/workflows/initial-setup.yml
+      - .github/workflows/health-check.yml
       - scripts/**
       - tests/**
-      - data_processed/**
       - data_verified/**
       - docs/**
   schedule:
@@ -36,7 +34,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: pages-${{ github.ref }}
+  group: pages-canonical-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -47,17 +45,39 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Test verified BLS data builder
+      - name: Verify this is the only Pages deploy workflow
+        shell: bash
         run: |
           set -euo pipefail
-          python -m py_compile scripts/build_bls_level_api.py tests/test_bls_level_api.py
-          python -m unittest tests.test_bls_level_api -v
+          for workflow in .github/workflows/*.yml; do
+            if [ "$workflow" = ".github/workflows/update-dashboard.yml" ]; then
+              continue
+            fi
+            if grep -Eq 'actions/(deploy-pages|upload-pages-artifact)@' "$workflow"; then
+              echo "::error::$workflow can deploy GitHub Pages outside the canonical fail-closed workflow" >&2
+              exit 1
+            fi
+          done
+          if grep -Eq 'cp[[:space:]]+dashboard\.html|data_processed/nfp_revisions' .github/workflows/deploy-static.yml .github/workflows/initial-setup.yml; then
+            echo '::error::Retired workflows still contain a legacy dashboard publication path.' >&2
+            exit 1
+          fi
+
+      - name: Compile and test verified BLS builders
+        run: |
+          set -euo pipefail
+          python -m py_compile \
+            scripts/build_bls_level_api.py \
+            scripts/build_bls_vintage_api.py \
+            tests/test_bls_level_api.py \
+            tests/test_bls_vintage_api.py
+          python -m unittest tests.test_bls_level_api tests.test_bls_vintage_api -v
 
       - name: Build fail-closed status page
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p docs
+          mkdir -p docs/api/v1
           generated_at="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
 
           cat > docs/index.html <<EOF
@@ -67,7 +87,7 @@ jobs:
             <meta charset="utf-8">
             <meta name="viewport" content="width=device-width,initial-scale=1">
             <meta name="robots" content="noindex,nofollow">
-            <title>米国雇用統計データ — 改定分析停止中</title>
+            <title>米国雇用統計データ — 検証済みデータのみ公開</title>
             <style>
               :root { color-scheme: light dark; font-family: system-ui, sans-serif; }
               body { margin: 0; background: Canvas; color: CanvasText; }
@@ -81,20 +101,24 @@ jobs:
           <body>
             <main>
               <p class="status">改定分析は利用不可</p>
-              <h1>検証済みBLS水準系列の配布を再開しました</h1>
-              <p>初回・第2回・第3回公表値を再現するrelease-vintageデータは未復旧のため、改定幅や不確実性の分析は引き続き停止しています。</p>
-              <p>一方、BLS Current Employment Statisticsの公式flat fileから、Total nonfarm employment（CES0000000001）の最新利用可能な水準系列を取得し、JSON/CSVとして配布します。</p>
+              <h1>検証済みBLSデータのみを配布しています</h1>
+              <p>Current Employment Statisticsの最新利用可能な水準系列と、BLS Employment Situationの公表資料から一次確認したrelease vintageを配布しています。</p>
+              <p>release vintageの収録範囲はまだ部分的です。長期の平均改定幅、不確実性、品質scoreなどの集計は公開していません。</p>
               <h2>利用可能なデータ</h2>
               <ul>
-                <li><a href="api/v1/manifest.json">API manifest</a></li>
+                <li><a href="api/v1/manifest.json">最新水準系列 manifest</a></li>
                 <li><a href="api/v1/total-nonfarm.json">Total nonfarm JSON</a></li>
                 <li><a href="api/v1/total-nonfarm.csv">Total nonfarm CSV</a></li>
+                <li><a href="api/v1/vintage-manifest.json">release vintage manifest</a></li>
+                <li><a href="api/v1/payroll-vintages.json">release vintages JSON</a></li>
+                <li><a href="api/v1/payroll-revisions.json">verified revisions JSON</a></li>
+                <li><a href="api/v1/payroll-revisions.csv">verified revisions CSV</a></li>
               </ul>
               <h2>重要な制約</h2>
               <ul>
-                <li>このAPIは各観測月の最新利用可能値であり、公表時点vintageの履歴ではありません。</li>
-                <li>改定段階の分析には使用できません。</li>
+                <li>release vintageのcoverageは部分的で、長期revision分析には不足しています。</li>
                 <li>旧dashboardのsynthetic・demo・placeholder値は分析、投資判断、政策評価に使用できません。</li>
+                <li>撤回済みの固定summary値は再公開しません。</li>
               </ul>
               <p>source: U.S. Bureau of Labor Statistics</p>
               <p>status generated at: <code>${generated_at}</code></p>
@@ -106,9 +130,10 @@ jobs:
           cat > docs/status.json <<EOF
           {
             "status": "partial",
-            "reason": "verified_revision_vintages_missing",
+            "reason": "verified_revision_vintages_partial",
             "analysis_available": false,
-            "revision_vintage_available": false,
+            "revision_vintage_available": true,
+            "revision_vintage_coverage": "partial",
             "verified_level_series_available": true,
             "legacy_synthetic_artifacts_trusted": false,
             "generated_at_utc": "${generated_at}",
@@ -116,50 +141,69 @@ jobs:
           }
           EOF
 
-      - name: Fetch official BLS Total nonfarm series and build API
+      - name: Build official BLS level and release-vintage APIs
         run: |
           set -euo pipefail
           python scripts/build_bls_level_api.py --output-dir docs/api/v1
+          python scripts/build_bls_vintage_api.py --output-dir docs/api/v1
 
-      - name: Validate published API contract
+      - name: Validate published API and status contracts
         run: |
           set -euo pipefail
           python - <<'PY'
-          import csv, hashlib, json
+          import csv
+          import hashlib
+          import json
           from pathlib import Path
+
           root = Path('docs/api/v1')
-          manifest = json.loads((root / 'manifest.json').read_text())
-          data = json.loads((root / 'total-nonfarm.json').read_text())
-          assert manifest['analysis_available'] is False
-          assert manifest['revision_vintage_available'] is False
-          assert manifest['level_series_available'] is True
-          assert data['series']['series_id'] == 'CES0000000001'
-          assert data['record_count'] == len(data['records'])
-          assert data['records'] == sorted(data['records'], key=lambda x: x['observation_date'])
-          assert len({r['observation_date'] for r in data['records']}) == len(data['records'])
+          status = json.loads(Path('docs/status.json').read_text(encoding='utf-8'))
+          level_manifest = json.loads((root / 'manifest.json').read_text())
+          level_data = json.loads((root / 'total-nonfarm.json').read_text())
+          vintage_manifest = json.loads((root / 'vintage-manifest.json').read_text())
+
+          assert status['analysis_available'] is False
+          assert status['revision_vintage_available'] is True
+          assert status['revision_vintage_coverage'] == 'partial'
+          assert status['legacy_synthetic_artifacts_trusted'] is False
+
+          assert level_manifest['analysis_available'] is False
+          assert level_manifest['level_series_available'] is True
+          assert level_data['series']['series_id'] == 'CES0000000001'
+          assert level_data['record_count'] == len(level_data['records'])
+          assert level_data['records'] == sorted(level_data['records'], key=lambda x: x['observation_date'])
+          assert len({r['observation_date'] for r in level_data['records']}) == len(level_data['records'])
           with (root / 'total-nonfarm.csv').open(newline='', encoding='utf-8') as handle:
-              assert sum(1 for _ in csv.DictReader(handle)) == data['record_count']
-          for name, meta in manifest['files'].items():
+              assert sum(1 for _ in csv.DictReader(handle)) == level_data['record_count']
+          for name, meta in level_manifest['files'].items():
               payload = (root / name).read_bytes()
               assert len(payload) == meta['bytes']
               assert hashlib.sha256(payload).hexdigest() == meta['sha256']
+
+          assert vintage_manifest['analysis_available'] is False
+          assert vintage_manifest['coverage_status'] == 'partial_verified_vintages'
+          assert vintage_manifest['vintage_record_count'] > 0
+          assert vintage_manifest['revision_record_count'] > 0
+          for name, meta in vintage_manifest['files'].items():
+              payload = (root / name).read_bytes()
+              assert len(payload) == meta['bytes']
+              assert hashlib.sha256(payload).hexdigest() == meta['sha256']
+
           print(json.dumps({
-              'records': data['record_count'],
-              'first': data['first_observation'],
-              'last': data['last_observation'],
-              'source_sha256': data['source']['source_sha256'],
+              'level_records': level_data['record_count'],
+              'vintage_records': vintage_manifest['vintage_record_count'],
+              'revision_records': vintage_manifest['revision_record_count'],
           }))
           PY
 
-      - name: Validate status page contract
+      - name: Validate public page fail-closed contract
         shell: bash
         run: |
           set -euo pipefail
           grep -q '改定分析は利用不可' docs/index.html
           grep -q '"analysis_available": false' docs/status.json
-          grep -q '"verified_level_series_available": true' docs/status.json
           grep -q '"legacy_synthetic_artifacts_trusted": false' docs/status.json
-          if grep -Eiq '112\.3|73\.4|17\.1|95/100|99\.9%|fully automated|ready to use' docs/index.html; then
+          if grep -Eiq '112\.3|73\.4|\+17K|17\.1|95/100|99\.9%|fully automated|ready to use' docs/index.html; then
             echo 'Unverified metric or operational claim found in published page.' >&2
             exit 1
           fi
@@ -168,15 +212,15 @@ jobs:
         if: github.event_name == 'pull_request'
         uses: actions/upload-artifact@v4
         with:
-          name: employment-status-and-bls-api
+          name: verified-employment-status
           path: docs
-          retention-days: 30
+          retention-days: 7
 
       - name: Upload Pages artifact
         if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v3
         with:
-          path: docs
+          path: docs/
 
   deploy:
     if: github.event_name != 'pull_request'
@@ -186,6 +230,6 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Deploy status page and verified API
+      - name: Deploy canonical fail-closed Pages artifact
         id: deployment
         uses: actions/deploy-pages@v4
