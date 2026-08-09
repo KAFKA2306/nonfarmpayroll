@@ -1,140 +1,18 @@
-name: Deploy Static Dashboard
+name: Deploy Static Dashboard (retired)
 
 on:
-  # 手動トリガー：UI だけ更新したい場合に実行
   workflow_dispatch:
-    inputs:
-      use_demo_data:
-        description: "既存データが無い場合にデモデータを生成する"
-        required: false
-        default: "false"     # 本番の安全策として既定は false
-        type: boolean
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: pages-static
-  cancel-in-progress: false   # 途中ジョブの強制キャンセルを防ぐ
 
 jobs:
-  prepare-site:
+  retired:
     runs-on: ubuntu-latest
-
+    timeout-minutes: 5
     steps:
-      # 1. リポジトリ取得
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      # 2. Python（デモデータ用）セットアップ
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.10"
-
-      - name: Install minimal dependencies
+      - name: Explain canonical publication path
         run: |
-          pip install pandas numpy
-
-      # 3. ダッシュボードとデータを docs/ に配置
-      - name: Build static dashboard
-        env:
-          USE_DEMO: ${{ inputs.use_demo_data }}
-        run: |
-          set -e
-
-          # --- UI ファイル ---
-          mkdir -p docs
-          cp dashboard.html docs/index.html
-          cp dashboard.css dashboard.js docs/
-
-          # --- データ準備 ---
-          if [ -f data_processed/nfp_revisions.csv ]; then
-            echo "▶️ 既存データを使用"
-          elif [ "$USE_DEMO" == "true" ]; then
-            echo "⚠️ 既存データなし。デモデータを生成します"
-            python - <<'PY'
-import pandas as pd, numpy as np, json, datetime as dt, pathlib
-pathlib.Path("data_processed").mkdir(exist_ok=True)
-
-dates = pd.date_range("2000-01-01", dt.date.today(), freq="MS")
-rng   = np.random.default_rng(42)
-level = np.linspace(130_000, 165_000, len(dates))
-season= 1_800 * np.sin(2*np.pi*np.arange(len(dates))/12)
-noise = rng.normal(0, 450, len(dates))
-final = level + season + noise
-
-rev   = rng.normal(20, 65, len(dates))
-df = pd.DataFrame({
-    "date": dates,
-    "final": final.astype(int),
-    "release1": (final-rev).astype(int),
-    "release2": (final-rev*0.4).astype(int),
-    "release3": (final-rev*0.1).astype(int),
-    "rev_final": rev.astype(int),
-    "se": 85,
-})
-df.to_csv("data_processed/nfp_revisions.csv", index=False)
-
-summary = {"generated": dt.datetime.utcnow().isoformat(),
-           "records": len(df)}
-with open("data_processed/summary_report.json","w") as f:
-    json.dump(summary, f, indent=2)
-PY
-          else
-            echo "::error::data_processed/nfp_revisions.csv が見つかりません。use_demo_data=true で再実行してください"
-            exit 1
-          fi
-
-          cp -r data_processed docs/
-
-          # --- メタ情報ファイル ---
-          date -u +"%Y-%m-%d %H:%M:%S UTC" > docs/last_updated.txt
-
-          cat > docs/status.json <<EOF
-          {
-            "status": "operational",
-            "deployment_type": "static",
-            "data_mode": "$([[ "$USE_DEMO" == "true" ]] && echo demo || echo existing)",
-            "last_updated": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
-            "workflow_run": "${{ github.run_id }}",
-            "commit_sha": "${{ github.sha }}"
-          }
-EOF
-
-          # --- デモバナー挿入 ---
-          if [ "$USE_DEMO" == "true" ]; then
-            sed -i 's/<body>/<body><div style="background:#f59e0b;color:#fff;text-align:center;padding:10px;position:fixed;top:0;width:100%;z-index:9999;">⚠️ DEMO&nbsp;MODE — Simulated&nbsp;data</div><div style="height:50px;"></div>/' docs/index.html
-          fi
-
-      # 4. docs/index.html が無い場合は失敗
-      - name: Sanity check
-        run: test -f docs/index.html
-
-      # 5. Pages 用アーティファクト作成
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: docs/
-
-  deploy:
-    needs: prepare-site
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deploy-step.outputs.page_url }}
-
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deploy-step
-        uses: actions/deploy-pages@v4
-
-      - name: Deployment summary
-        run: |
-          echo "## 📊 Static Dashboard Deployment" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**URL:** https://kafka2306.github.io/nonfarmpayroll/" >> $GITHUB_STEP_SUMMARY
-          echo "**Data Mode:** $([[ '${{ inputs.use_demo_data }}' == 'true' ]] && echo Demo || echo Existing)" >> $GITHUB_STEP_SUMMARY
-          echo "**Completed:** $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
+          set -euo pipefail
+          echo "::notice::This workflow is retired because the legacy dashboard can publish synthetic or otherwise unverified revision data."
+          echo "Use .github/workflows/update-dashboard.yml for the canonical fail-closed Pages deployment."
