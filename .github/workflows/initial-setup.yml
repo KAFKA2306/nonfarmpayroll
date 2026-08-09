@@ -1,123 +1,18 @@
-name: Initial Repository Setup
+name: Initial Repository Setup (retired)
 
 on:
-  push:           # 初回コミットで自動実行。必要に応じて手動実行も可
-    branches: [main]
   workflow_dispatch:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 jobs:
-  setup:
+  retired:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
-      # 1. ソース取得
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      # 2. 必須ファイル確認
-      - name: Verify repository structure
+      - name: Explain canonical publication path
         run: |
-          echo "## 🔍 Repository Structure Check" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          essential_files=(dashboard.html dashboard.css dashboard.js \
-                           scripts/01_download_fred.py scripts/03_merge_revisions.py \
-                           requirements.txt)
-          all_ok=true
-          for f in "${essential_files[@]}"; do
-            if [ -f "$f" ]; then
-              echo "✅ $f" >> $GITHUB_STEP_SUMMARY
-            else
-              echo "❌ $f (missing)" >> $GITHUB_STEP_SUMMARY
-              all_ok=false
-            fi
-          done
-          echo "" >> $GITHUB_STEP_SUMMARY
-          $all_ok || { echo "::error::Some essential files are missing"; exit 1; }
-
-      # 3. Python セットアップ
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.10"
-
-      - name: Install dependencies
-        run: |
-          pip install --upgrade pip
-          pip install -r requirements.txt
-
-      # 4. FRED データ取得 & 加工（失敗したらジョブ終了）
-      - name: Download and process FRED data
-        run: |
-          python scripts/01_download_fred.py
-          python scripts/03_merge_revisions.py
-        env:
-          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
-
-      # 5. GitHub Pages 用ファイル配置
-      - name: Prepare dashboard for Pages
-        run: |
-          mkdir -p docs
-          cp dashboard.html docs/index.html
-          cp dashboard.css dashboard.js docs/
-          cp -r data_processed docs/
-          date -u +"%Y-%m-%d %H:%M:%S UTC" > docs/last_updated.txt
-          cat > docs/status.json <<EOF
-          {
-            "status": "operational",
-            "deployment_type": "initial_setup",
-            "data_source": "FRED (Real Data)",
-            "last_updated": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
-            "workflow_run": "${{ github.run_id }}",
-            "commit_sha": "${{ github.sha }}",
-            "next_update": "First Friday of next month"
-          }
-          EOF
-
-      # 6. docs/index.html の存在チェック
-      - name: Sanity-check built site
-        run: |
-          [ -f docs/index.html ] || { echo "::error::docs/index.html not found"; exit 1; }
-
-      # 7. アーティファクトとしてアップロード
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: docs/
-
-  deploy:
-    needs: setup
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
-
-      - name: Create setup summary
-        run: |
-          echo "## 🎉 Dashboard Setup Complete!" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Dashboard URL:** https://kafka2306.github.io/nonfarmpayroll/" >> $GITHUB_STEP_SUMMARY
-          echo "**Status:** ✅ Operational" >> $GITHUB_STEP_SUMMARY
-          echo "**Data Source:** FRED (Real Data)" >> $GITHUB_STEP_SUMMARY
-          echo "**Setup Time:** $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### 🚀 What's Next?" >> $GITHUB_STEP_SUMMARY
-          echo "- 📅 Automatic updates every month (first Friday)" >> $GITHUB_STEP_SUMMARY
-          echo "- 🏥 Daily health checks to ensure reliability" >> $GITHUB_STEP_SUMMARY
-          echo "- 🔧 Manual workflow triggers available in Actions tab" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### 📊 Features Available:" >> $GITHUB_STEP_SUMMARY
-          echo "- Interactive employment trend charts" >> $GITHUB_STEP_SUMMARY
-          echo "- Revision pattern analysis" >> $GITHUB_STEP_SUMMARY
-          echo "- Uncertainty quantification" >> $GITHUB_STEP_SUMMARY
-          echo "- Data quality assessment" >> $GITHUB_STEP_SUMMARY
-          echo "- CSV export functionality" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Your employment statistics dashboard is ready! 🎊**" >> $GITHUB_STEP_SUMMARY
+          set -euo pipefail
+          echo "::notice::This workflow is retired because the legacy dashboard can publish unverified revision data."
+          echo "Use .github/workflows/update-dashboard.yml for the canonical fail-closed Pages deployment."
