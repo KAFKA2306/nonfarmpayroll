@@ -1,5 +1,9 @@
 # nonfarmpayroll — 検証済みBLSデータのみ公開
 
+**雇用統計で危険なのは、数字が欠けていることではない。検証できない数字を埋めてしまうことだ。**
+
+nonfarmpayrollは、BLSの一次公表資料で確認できたrelease vintageだけを公開し、coverageが足りない分析は数値で補わず停止します。
+
 > **状態: 長期の改定分析は利用不可 / 一次確認済みrelease vintageは部分公開**  
 > 旧dashboardで公開していた平均改定、不確実性、品質score、稼働率などの固定値は、検証済みBLS公表vintageから再現できないため撤回しています。
 
