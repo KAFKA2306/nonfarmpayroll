@@ -1,0 +1,10 @@
+{
+  "status": "partial",
+  "reason": "verified_revision_vintages_partial",
+  "analysis_available": false,
+  "revision_vintage_available": true,
+  "revision_vintage_coverage": "partial",
+  "verified_level_series_available": true,
+  "legacy_synthetic_artifacts_trusted": false,
+  "publication_contract_version": "2.0"
+}
