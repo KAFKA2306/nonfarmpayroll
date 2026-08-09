@@ -6,6 +6,7 @@ on:
       - README.md
       - index.html
       - status.json
+      - _config.yml
       - .github/workflows/update-dashboard.yml
       - .github/workflows/deploy-static.yml
       - .github/workflows/initial-setup.yml
@@ -20,6 +21,7 @@ on:
       - README.md
       - index.html
       - status.json
+      - _config.yml
       - .github/workflows/update-dashboard.yml
       - .github/workflows/deploy-static.yml
       - .github/workflows/initial-setup.yml
@@ -57,6 +59,17 @@ jobs:
             echo '::error::Retired workflows still contain a legacy dashboard publication path.' >&2
             exit 1
           fi
+
+      - name: Verify legacy evidence is excluded from Pages
+        run: |
+          set -euo pipefail
+          test -f _config.yml
+          for excluded in dashboard.html dashboard.css dashboard.js data_processed data_raw scripts tests requirements.txt; do
+            grep -Eq "^[[:space:]]*-[[:space:]]+${excluded//./\\.}[[:space:]]*$" _config.yml || {
+              echo "::error::$_config.yml does not exclude $excluded from legacy Pages publication" >&2
+              exit 1
+            }
+          done
 
       - name: Compile and test verified BLS builders
         run: |
