@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="ja" data-state="loading">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <title>Verified NFP Embed</title>
+  <link rel="stylesheet" href="embed.css">
+</head>
+<body>
+  <main class="card" aria-live="polite">
+    <p class="eyebrow">U.S. Bureau of Labor Statistics · CES · <code>CES0000000001</code></p>
+    <p id="loading">検証済みデータを確認しています…</p>
+    <p id="failure" class="failure" hidden></p>
+    <section id="content" hidden>
+      <div class="heading">
+        <div>
+          <h1 id="title">Total nonfarm employment</h1>
+          <p class="latest"><strong id="latest-value"></strong> <span id="preliminary" class="badge"></span></p>
+        </div>
+        <span id="range-label" class="range"></span>
+      </div>
+      <svg id="chart" role="img" aria-label="Total nonfarm employment level series"></svg>
+      <dl class="facts">
+        <div><dt>Latest observation</dt><dd id="latest-date"></dd></div>
+        <div><dt>Unit</dt><dd id="unit"></dd></div>
+        <div><dt>Seasonal adjustment</dt><dd id="seasonal"></dd></div>
+      </dl>
+      <p id="coverage" class="meta"></p>
+      <p id="retrieved" class="meta"></p>
+      <p id="boundary" class="boundary"></p>
+      <nav>
+        <a id="source-link" target="_blank" rel="noopener noreferrer"></a>
+        <a id="full-link" href="../../../" target="_blank" rel="noopener noreferrer"></a>
+        <a id="inquiry-link" href="https://github.com/KAFKA2306/nonfarmpayroll/issues/5" target="_blank" rel="noopener noreferrer"></a>
+      </nav>
+    </section>
+  </main>
+  <script src="embed.js" defer></script>
+</body>
+</html>
