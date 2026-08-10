@@ -1,0 +1,21 @@
+:root { color-scheme: light dark; font-family: ui-sans-serif, system-ui, sans-serif; }
+* { box-sizing: border-box; }
+body { margin: 0; background: transparent; color: CanvasText; }
+.card { max-width: 840px; margin: 0 auto; padding: 20px; border: 1px solid color-mix(in srgb, CanvasText 18%, transparent); border-radius: 18px; background: Canvas; }
+.eyebrow, .meta { margin: 0 0 10px; font-size: 12px; opacity: .7; }
+.heading { display: flex; align-items: start; justify-content: space-between; gap: 16px; }
+h1 { margin: 0; font-size: clamp(20px, 4vw, 30px); line-height: 1.2; }
+.latest { margin: 8px 0 0; font-size: 16px; }
+.badge, .range { display: inline-block; padding: 3px 7px; border: 1px solid currentColor; border-radius: 999px; font-size: 11px; font-weight: 700; }
+.badge[data-preliminary="true"] { border-style: dashed; }
+#chart { width: 100%; min-height: 220px; margin: 18px 0 8px; overflow: visible; }
+.series { stroke: currentColor; stroke-width: 2.5; }
+.facts { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px; margin: 12px 0; }
+.facts div { padding: 10px; border-radius: 10px; background: color-mix(in srgb, CanvasText 6%, Canvas); }
+dt { font-size: 11px; opacity: .65; }
+dd { margin: 4px 0 0; font-size: 13px; overflow-wrap: anywhere; }
+.boundary { margin: 14px 0; padding: 10px 12px; border-left: 3px solid currentColor; font-size: 12px; line-height: 1.5; }
+nav { display: flex; flex-wrap: wrap; gap: 14px; font-size: 13px; }
+.failure { margin: 12px 0 0; padding: 12px; border: 1px solid currentColor; border-radius: 10px; font-weight: 700; }
+[data-state="unavailable"] .card { border-style: dashed; }
+@media (max-width: 600px) { .facts { grid-template-columns: 1fr; } .heading { display: block; } .range { margin-top: 10px; } }

@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "analysis_available": false,
+  "revision_vintage_available": false,
+  "level_series_available": true,
+  "series_id": "CES0000000001",
+  "coverage_scope": "recent_5y_verified_subset",
+  "record_count": 61,
+  "first_observation": "2021-07-01",
+  "last_observation": "2026-07-01",
+  "retrieved_at_utc": "2026-08-10T20:06:33Z",
+  "source_sha256": "286e1dc014d476d411e1cfaffa0ebf6da5f0698aa203d88efe54a4536bb27260",
+  "files": {
+    "total-nonfarm.json": {
+      "bytes": 7743,
+      "sha256": "eea094d749d4668417ecd01c57bc977e8667465cd8c5941a7e38915ef7572f23"
+    },
+    "total-nonfarm.csv": {
+      "bytes": 2371,
+      "sha256": "85ef7172250920b88525b5430841269652eb1548870c179c4e484b78743f6a1d"
+    }
+  }
+}

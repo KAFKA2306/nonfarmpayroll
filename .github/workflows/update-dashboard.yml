@@ -15,6 +15,7 @@ on:
       - tests/**
       - data_verified/**
       - docs/**
+      - metrics/**
   push:
     branches: [main]
     paths:
@@ -30,6 +31,7 @@ on:
       - tests/**
       - data_verified/**
       - docs/**
+      - metrics/**
   schedule:
     - cron: '30 15 1-7 * 5'
   workflow_dispatch:
@@ -66,20 +68,25 @@ jobs:
           test -f _config.yml
           for excluded in dashboard.html dashboard.css dashboard.js data_processed data_raw scripts tests requirements.txt; do
             grep -Eq "^[[:space:]]*-[[:space:]]+${excluded//./\\.}[[:space:]]*$" _config.yml || {
-              echo "::error::$_config.yml does not exclude $excluded from legacy Pages publication" >&2
+              echo "::error::_config.yml does not exclude $excluded from legacy Pages publication" >&2
               exit 1
             }
           done
 
-      - name: Compile and test verified BLS builders
+      - name: Compile and test verified BLS builders and media embed
         run: |
           set -euo pipefail
           python -m py_compile \
             scripts/build_bls_level_api.py \
             scripts/build_bls_vintage_api.py \
             tests/test_bls_level_api.py \
-            tests/test_bls_vintage_api.py
-          python -m unittest tests.test_bls_level_api tests.test_bls_vintage_api -v
+            tests/test_bls_vintage_api.py \
+            tests/test_nfp_media_embed.py
+          python -m unittest \
+            tests.test_bls_level_api \
+            tests.test_bls_vintage_api \
+            tests.test_nfp_media_embed -v
+          node --check docs/embed/nfp/embed.js
 
       - name: Rebuild deterministic verified vintage distribution
         run: |
@@ -105,12 +112,42 @@ jobs:
           assert status['analysis_available'] is False
           assert status['revision_vintage_available'] is True
           assert status['revision_vintage_coverage'] == 'partial'
+          assert status['verified_level_series_available'] is True
           assert status['legacy_synthetic_artifacts_trusted'] is False
           PY
           if grep -Eiq '112\.3|73\.4|\+17K|17\.1|95/100|99\.9%|fully automated|ready to use' index.html; then
             echo '::error::Retracted or unverified claim found in root Pages document.' >&2
             exit 1
           fi
+
+      - name: Validate level manifest and embed isolation
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib
+          import json
+          from pathlib import Path
+
+          root = Path('docs/api/v1')
+          manifest = json.loads((root / 'manifest.json').read_text(encoding='utf-8'))
+          data = json.loads((root / 'total-nonfarm.json').read_text(encoding='utf-8'))
+          assert manifest['level_series_available'] is True
+          assert manifest['analysis_available'] is False
+          assert manifest['revision_vintage_available'] is False
+          assert manifest['series_id'] == 'CES0000000001'
+          assert manifest['coverage_scope'] == 'recent_5y_verified_subset'
+          assert data['record_count'] == len(data['records']) >= 61
+          assert data['last_observation'] == '2026-07-01'
+          assert data['records'][-1]['preliminary'] is True
+          for name, meta in manifest['files'].items():
+              payload = (root / name).read_bytes()
+              assert len(payload) == meta['bytes']
+              assert hashlib.sha256(payload).hexdigest() == meta['sha256']
+          PY
+          ! grep -Eq 'payroll-(revisions|vintages)' docs/embed/nfp/embed.js
+          grep -q 'CHECKSUM_MISMATCH' docs/embed/nfp/embed.js
+          grep -q 'business_inquiry_started' docs/embed/nfp/embed.js
+          grep -q '<iframe' tests/fixtures/nfp-media-embed-host.html
 
       - name: Validate vintage manifest checksums
         run: |
@@ -140,4 +177,4 @@ jobs:
         run: |
           set -euo pipefail
           rm -rf scripts/__pycache__ tests/__pycache__
-          test -z "$(git status --porcelain)"
+          test -z "$(git status --porcelain --untracked-files=all)"

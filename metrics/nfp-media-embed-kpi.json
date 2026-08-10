@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "status": "NOT_STARTED",
+  "window_days": 60,
+  "metrics": {
+    "demo_pitches": 0,
+    "external_test_embeds": 0,
+    "embed_loads": 0,
+    "qualified_business_inquiries": 0,
+    "paid_white_label_pocs": 0,
+    "continuation_requests": 0
+  },
+  "evidence": [],
+  "note": "Record only observed outcomes with evidence. Do not infer sales, customers, or usage from technical tests."
+}

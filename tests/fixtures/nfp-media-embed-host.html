@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>NFP embed host fixture</title></head>
+<body>
+  <h1>External host fixture</h1>
+  <iframe
+    id="nfp-embed"
+    title="Verified Total nonfarm employment"
+    src="../../docs/embed/nfp/index.html?range=1y&locale=en&partner=fixture_host"
+    width="840"
+    height="520"
+    loading="lazy"></iframe>
+  <script>
+    window.addEventListener('message', (event) => {
+      if (event.data?.type === 'nfp_media_embed_metric') {
+        document.body.dataset.lastMetric = event.data.metric;
+      }
+    });
+  </script>
+</body>
+</html>
