@@ -29,6 +29,16 @@
       <li><code>legacy_synthetic_artifacts_trusted = false</code></li>
     </ul>
 
+    <h2>検証済みNFP level snapshot / media embed</h2>
+    <p>BLS CES <code>CES0000000001</code> のlevel seriesだけを使う埋め込みデモです。manifestとSHA-256が一致しない場合はチャートを表示しません。現在の公開snapshotは2021-07〜2026-07です。</p>
+    <ul>
+      <li><a href="docs/embed/nfp/index.html?range=5y&amp;locale=ja&amp;partner=public">検証済みNFPチャート埋め込みデモ</a></li>
+      <li><a href="docs/api/v1/manifest.json">level series manifest</a></li>
+      <li><a href="docs/api/v1/total-nonfarm.json">Total nonfarm JSON</a></li>
+      <li><a href="docs/api/v1/total-nonfarm.csv">Total nonfarm CSV</a></li>
+      <li><a href="docs/services/nfp-media-embed.html">媒体向け提供範囲</a></li>
+    </ul>
+
     <h2>検証済みrelease vintage</h2>
     <p>2026年5月〜7月について、BLS Employment Situationの公表資料に紐づく6 recordsをrepositoryで保持しています。長期revision分布を表すものではありません。</p>
     <ul>
@@ -42,6 +52,7 @@
     <ul>
       <li>旧dashboardのsynthetic・demo・placeholder値は、分析・投資判断・政策評価に使用できません。</li>
       <li>coverage不足を推測値で補完しません。</li>
+      <li>level snapshotからrelease-vintage history、改定幅、不確実性を生成しません。</li>
       <li>十分な一次公表履歴が揃うまで、長期の改定統計はfail closedのままです。</li>
     </ul>
 
