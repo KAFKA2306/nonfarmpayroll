@@ -30,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Compile and test
         run: |
           set -euo pipefail
@@ -55,8 +55,10 @@ jobs:
           manifest = json.loads((root / 'vintage-manifest.json').read_text())
           assert manifest['analysis_available'] is False
           assert manifest['coverage_status'] == 'partial_verified_vintages'
+          assert manifest['integrity_status'] == 'SOURCE_DOCUMENT_CHECKSUMS_NOT_ARCHIVED'
           assert manifest['vintage_record_count'] == 6
           assert manifest['revision_record_count'] == 3
+          assert manifest['revision_stage_counts'] == {'release1': 3, 'release2': 2, 'release3': 1}
           for name, meta in manifest['files'].items():
               payload = (root / name).read_bytes()
               assert len(payload) == meta['bytes']
@@ -64,7 +66,7 @@ jobs:
           print('verified vintage API smoke test passed')
           PY
       - name: Upload verified vintage API
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: verified-bls-payroll-vintages
           path: |
@@ -73,3 +75,9 @@ jobs:
             docs/api/v1/payroll-revisions.csv
             docs/api/v1/vintage-manifest.json
           retention-days: 30
+      - name: Verify clean checkout
+        if: always()
+        run: |
+          find . -type d -name __pycache__ -prune -exec rm -rf {} +
+          find . -type f -name '*.py[co]' -delete
+          test -z "$(git status --porcelain --untracked-files=all)"

@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "1.1",
   "analysis_available": false,
   "revision_record_count": 3,
   "records": [
@@ -11,7 +11,9 @@
       "to_value_thousands": 129,
       "revision_thousands": -43,
       "release_date": "2026-07-02",
-      "source_document_id": "USDL-26-1125"
+      "source_document_id": "USDL-26-1125",
+      "source_url": "https://www.bls.gov/news.release/archives/empsit_07022026.pdf",
+      "source_snapshot_sha256": "74634f4ecb1bc6a9c17a39b58266f459d2834f1b77dbc9c250da1b4cc3358ca9"
     },
     {
       "observation_month": "2026-05",
@@ -21,7 +23,9 @@
       "to_value_thousands": 63,
       "revision_thousands": -66,
       "release_date": "2026-08-07",
-      "source_document_id": "USDL-26-1291"
+      "source_document_id": "USDL-26-1291",
+      "source_url": "https://www.bls.gov/news.release/empsit.nr0.htm",
+      "source_snapshot_sha256": "74634f4ecb1bc6a9c17a39b58266f459d2834f1b77dbc9c250da1b4cc3358ca9"
     },
     {
       "observation_month": "2026-06",
@@ -31,7 +35,9 @@
       "to_value_thousands": 20,
       "revision_thousands": -37,
       "release_date": "2026-08-07",
-      "source_document_id": "USDL-26-1291"
+      "source_document_id": "USDL-26-1291",
+      "source_url": "https://www.bls.gov/news.release/empsit.nr0.htm",
+      "source_snapshot_sha256": "74634f4ecb1bc6a9c17a39b58266f459d2834f1b77dbc9c250da1b4cc3358ca9"
     }
   ]
 }

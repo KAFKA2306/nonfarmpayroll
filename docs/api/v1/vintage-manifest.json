@@ -1,10 +1,20 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "1.1",
   "dataset_id": "bls-total-nonfarm-monthly-change-release-vintages",
+  "series_id": "CES0000000001",
+  "unit": "thousand_persons",
+  "seasonal_adjustment": "seasonally_adjusted",
+  "retrieved_at": "2026-08-08T05:20:00Z",
   "analysis_available": false,
   "coverage_status": "partial_verified_vintages",
+  "integrity_status": "SOURCE_DOCUMENT_CHECKSUMS_NOT_ARCHIVED",
   "vintage_record_count": 6,
   "revision_record_count": 3,
+  "revision_stage_counts": {
+    "release1": 3,
+    "release2": 2,
+    "release3": 1
+  },
   "first_observation": "2026-05",
   "last_observation": "2026-07",
   "source_snapshot_sha256": "74634f4ecb1bc6a9c17a39b58266f459d2834f1b77dbc9c250da1b4cc3358ca9",
@@ -13,6 +23,11 @@
     "https://www.bls.gov/news.release/archives/empsit_07022026.pdf",
     "https://www.bls.gov/news.release/empsit.nr0.htm"
   ],
+  "source_document_ids": [
+    "USDL-26-0786",
+    "USDL-26-1125",
+    "USDL-26-1291"
+  ],
   "license": {
     "name": "U.S. federal government public domain",
     "url": "https://www.bls.gov/bls/linksite.htm",
@@ -20,16 +35,16 @@
   },
   "files": {
     "payroll-vintages.json": {
-      "bytes": 1792,
-      "sha256": "df143d0f3a074ac0e66b32a42195a0e7eb3626c59664cbed7867fefcba619632"
+      "bytes": 3464,
+      "sha256": "d59109f9a9fd988e2e10f91d2a814a73e878b8f3f83ea37bcdb4368ad9348232"
     },
     "payroll-revisions.json": {
-      "bytes": 986,
-      "sha256": "1d51f2bd87de9ad7b7abaefdafc795755fe448e2b92fb3977d2f0d693caa52c9"
+      "bytes": 1513,
+      "sha256": "ef9638fd5fa18b66033e64416bba521e3e2dda70eb17afbc49028b83a9f3d322"
     },
     "payroll-revisions.csv": {
-      "bytes": 312,
-      "sha256": "06e0f67e40bb6061895f30e241cc728137daec914e3770c60f8c172b39abacaf"
+      "bytes": 699,
+      "sha256": "1f80a6fb8cb7543a2f2f3e87038e9bc7ccc874255e77c0cfa7bb202d3905de38"
     }
   }
 }
