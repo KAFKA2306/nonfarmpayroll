@@ -35,16 +35,17 @@ class BlsVintageApiTest(unittest.TestCase):
             revisions = json.loads((out / "payroll-revisions.json").read_text())
 
             self.assertFalse(manifest["analysis_available"])
-            self.assertEqual(manifest["vintage_record_count"], 6)
-            self.assertEqual(manifest["revision_record_count"], 3)
+            self.assertEqual(manifest["vintage_record_count"], 12)
+            self.assertEqual(manifest["revision_record_count"], 7)
             self.assertEqual(manifest["revision_stage_counts"], {
-                "release1": 3, "release2": 2, "release3": 1
+                "release1": 5, "release2": 4, "release3": 3
             })
             self.assertEqual(manifest["integrity_status"], "SOURCE_DOCUMENT_CHECKSUMS_NOT_ARCHIVED")
-            self.assertEqual(vintages["record_count"], 6)
+            self.assertEqual(manifest["first_observation"], "2026-03")
+            self.assertEqual(vintages["record_count"], 12)
             self.assertEqual(
                 [r["revision_thousands"] for r in revisions["records"]],
-                [-43, -66, -37],
+                [7, 29, 64, -31, -43, -66, -37],
             )
             first = vintages["records"][0]
             self.assertEqual(first["series_id"], "CES0000000001")
@@ -53,13 +54,22 @@ class BlsVintageApiTest(unittest.TestCase):
             self.assertEqual(first["retrieved_at"], self.payload["retrieved_at"])
             self.assertEqual(len(first["source_snapshot_sha256"]), 64)
 
-    def test_may_has_three_releases_and_july_is_initial_only(self):
+    def test_march_and_april_have_complete_three_release_chains(self):
         by_month = {}
         for row in self.payload["records"]:
             by_month.setdefault(row["observation_month"], []).append(row)
+        for month in ("2026-03", "2026-04"):
+            self.assertEqual(
+                [r["revision_stage"] for r in by_month[month]],
+                ["release1", "release2", "release3"],
+            )
         self.assertEqual(
-            [r["revision_stage"] for r in by_month["2026-05"]],
-            ["release1", "release2", "release3"],
+            [r["value_thousands"] for r in by_month["2026-03"]],
+            [178, 185, 214],
+        )
+        self.assertEqual(
+            [r["value_thousands"] for r in by_month["2026-04"]],
+            [115, 179, 148],
         )
         self.assertEqual(by_month["2026-07"][0]["value_thousands"], -23)
 
@@ -73,7 +83,7 @@ class BlsVintageApiTest(unittest.TestCase):
 
     def test_observation_release_date_inversion_is_rejected(self):
         def mutate(payload):
-            payload["records"][0]["release_date"] = "2026-05-01"
+            payload["records"][0]["release_date"] = "2026-03-01"
         self._assert_rejected(mutate)
 
     def test_revision_release_dates_must_increase(self):
