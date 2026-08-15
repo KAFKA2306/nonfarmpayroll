@@ -56,9 +56,9 @@ jobs:
           assert manifest['analysis_available'] is False
           assert manifest['coverage_status'] == 'partial_verified_vintages'
           assert manifest['integrity_status'] == 'SOURCE_DOCUMENT_CHECKSUMS_NOT_ARCHIVED'
-          assert manifest['vintage_record_count'] == 6
-          assert manifest['revision_record_count'] == 3
-          assert manifest['revision_stage_counts'] == {'release1': 3, 'release2': 2, 'release3': 1}
+          assert manifest['vintage_record_count'] == 12
+          assert manifest['revision_record_count'] == 7
+          assert manifest['revision_stage_counts'] == {'release1': 5, 'release2': 4, 'release3': 3}
           for name, meta in manifest['files'].items():
               payload = (root / name).read_bytes()
               assert len(payload) == meta['bytes']
