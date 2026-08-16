@@ -35,17 +35,17 @@ class BlsVintageApiTest(unittest.TestCase):
             revisions = json.loads((out / "payroll-revisions.json").read_text())
 
             self.assertFalse(manifest["analysis_available"])
-            self.assertEqual(manifest["vintage_record_count"], 18)
-            self.assertEqual(manifest["revision_record_count"], 11)
+            self.assertEqual(manifest["vintage_record_count"], 21)
+            self.assertEqual(manifest["revision_record_count"], 13)
             self.assertEqual(manifest["revision_stage_counts"], {
-                "release1": 7, "release2": 6, "release3": 5
+                "release1": 8, "release2": 7, "release3": 6
             })
             self.assertEqual(manifest["integrity_status"], "SOURCE_DOCUMENT_CHECKSUMS_NOT_ARCHIVED")
-            self.assertEqual(manifest["first_observation"], "2026-01")
-            self.assertEqual(vintages["record_count"], 18)
+            self.assertEqual(manifest["first_observation"], "2025-12")
+            self.assertEqual(vintages["record_count"], 21)
             self.assertEqual(
                 [r["revision_thousands"] for r in revisions["records"]],
-                [-4, 34, -41, -23, 7, 29, 64, -31, -43, -66, -37],
+                [-2, -65, -4, 34, -41, -23, 7, 29, 64, -31, -43, -66, -37],
             )
             first = vintages["records"][0]
             self.assertEqual(first["series_id"], "CES0000000001")
@@ -54,11 +54,12 @@ class BlsVintageApiTest(unittest.TestCase):
             self.assertEqual(first["retrieved_at"], self.payload["retrieved_at"])
             self.assertEqual(len(first["source_snapshot_sha256"]), 64)
 
-    def test_january_through_april_have_complete_three_release_chains(self):
+    def test_december_through_april_have_complete_three_release_chains(self):
         by_month = {}
         for row in self.payload["records"]:
             by_month.setdefault(row["observation_month"], []).append(row)
         expected = {
+            "2025-12": [50, 48, -17],
             "2026-01": [130, 126, 160],
             "2026-02": [-92, -133, -156],
             "2026-03": [178, 185, 214],
@@ -85,7 +86,7 @@ class BlsVintageApiTest(unittest.TestCase):
 
     def test_observation_release_date_inversion_is_rejected(self):
         def mutate(payload):
-            payload["records"][0]["release_date"] = "2026-01-01"
+            payload["records"][0]["release_date"] = "2025-12-01"
         self._assert_rejected(mutate)
 
     def test_revision_release_dates_must_increase(self):
