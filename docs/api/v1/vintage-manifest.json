@@ -4,21 +4,22 @@
   "series_id": "CES0000000001",
   "unit": "thousand_persons",
   "seasonal_adjustment": "seasonally_adjusted",
-  "retrieved_at": "2026-08-15T21:06:22Z",
+  "retrieved_at": "2026-08-16T02:50:00Z",
   "analysis_available": false,
   "coverage_status": "partial_verified_vintages",
   "integrity_status": "SOURCE_DOCUMENT_CHECKSUMS_NOT_ARCHIVED",
-  "vintage_record_count": 18,
-  "revision_record_count": 11,
+  "vintage_record_count": 21,
+  "revision_record_count": 13,
   "revision_stage_counts": {
-    "release1": 7,
-    "release2": 6,
-    "release3": 5
+    "release1": 8,
+    "release2": 7,
+    "release3": 6
   },
-  "first_observation": "2026-01",
+  "first_observation": "2025-12",
   "last_observation": "2026-07",
-  "source_snapshot_sha256": "dc62c5db15f215a2053f10e484e7e1f08e6583b0b7cb0b070ee6132bbda63b79",
+  "source_snapshot_sha256": "e4de93a742b311c6d771fc856315295f210dcbdc7b7538ea0d98dbf54a89a7be",
   "source_urls": [
+    "https://www.bls.gov/news.release/archives/empsit_01092026.htm",
     "https://www.bls.gov/news.release/archives/empsit_02112026.htm",
     "https://www.bls.gov/news.release/archives/empsit_03062026.htm",
     "https://www.bls.gov/news.release/archives/empsit_04032026.htm",
@@ -28,6 +29,7 @@
     "https://www.bls.gov/news.release/empsit.nr0.htm"
   ],
   "source_document_ids": [
+    "USDL-26-0020",
     "USDL-26-0169",
     "USDL-26-0367",
     "USDL-26-0580",
@@ -43,16 +45,16 @@
   },
   "files": {
     "payroll-vintages.json": {
-      "bytes": 10055,
-      "sha256": "e3757d985012442ce8a85affbceeb4984c28c65f57f39eb2bb08897b87a0bdd9"
+      "bytes": 11700,
+      "sha256": "8ccc944a4c3ebbef3069ae50848d28f31beed153f654b718f83a2bb818040e7a"
     },
     "payroll-revisions.json": {
-      "bytes": 5335,
-      "sha256": "d3e869c8e9a55fffb3cd76ddc5009a43e918c1f27bb0d3659c01844bc4c53125"
+      "bytes": 6287,
+      "sha256": "ffbfb0c02ff00adfecad74adcd2781b1e487b471ae3b98ebfdf6abb83bf56551"
     },
     "payroll-revisions.csv": {
-      "bytes": 2208,
-      "sha256": "03f7b8af6de98ef10029736dc3ddad71d67dcc8e324478838d2b3ddd0662cb5b"
+      "bytes": 2582,
+      "sha256": "2f51a6d66a7d02218428b1b4b42d3ec69f876c29c819954869e1c493e92e73c1"
     }
   }
 }
