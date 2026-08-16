@@ -3,8 +3,47 @@
   "analysis_available": false,
   "coverage_status": "partial_verified_vintages",
   "integrity_status": "SOURCE_DOCUMENT_CHECKSUMS_NOT_ARCHIVED",
-  "record_count": 18,
+  "record_count": 21,
   "records": [
+    {
+      "observation_month": "2025-12",
+      "release_date": "2026-01-09",
+      "revision_stage": "release1",
+      "value_thousands": 50,
+      "source_document_id": "USDL-26-0020",
+      "source_url": "https://www.bls.gov/news.release/archives/empsit_01092026.htm",
+      "series_id": "CES0000000001",
+      "unit": "thousand_persons",
+      "seasonal_adjustment": "seasonally_adjusted",
+      "retrieved_at": "2026-08-16T02:50:00Z",
+      "source_snapshot_sha256": "e4de93a742b311c6d771fc856315295f210dcbdc7b7538ea0d98dbf54a89a7be"
+    },
+    {
+      "observation_month": "2025-12",
+      "release_date": "2026-02-11",
+      "revision_stage": "release2",
+      "value_thousands": 48,
+      "source_document_id": "USDL-26-0169",
+      "source_url": "https://www.bls.gov/news.release/archives/empsit_02112026.htm",
+      "series_id": "CES0000000001",
+      "unit": "thousand_persons",
+      "seasonal_adjustment": "seasonally_adjusted",
+      "retrieved_at": "2026-08-16T02:50:00Z",
+      "source_snapshot_sha256": "e4de93a742b311c6d771fc856315295f210dcbdc7b7538ea0d98dbf54a89a7be"
+    },
+    {
+      "observation_month": "2025-12",
+      "release_date": "2026-03-06",
+      "revision_stage": "release3",
+      "value_thousands": -17,
+      "source_document_id": "USDL-26-0367",
+      "source_url": "https://www.bls.gov/news.release/archives/empsit_03062026.htm",
+      "series_id": "CES0000000001",
+      "unit": "thousand_persons",
+      "seasonal_adjustment": "seasonally_adjusted",
+      "retrieved_at": "2026-08-16T02:50:00Z",
+      "source_snapshot_sha256": "e4de93a742b311c6d771fc856315295f210dcbdc7b7538ea0d98dbf54a89a7be"
+    },
     {
       "observation_month": "2026-01",
       "release_date": "2026-02-11",
@@ -15,8 +54,8 @@
       "series_id": "CES0000000001",
       "unit": "thousand_persons",
       "seasonal_adjustment": "seasonally_adjusted",
-      "retrieved_at": "2026-08-15T21:06:22Z",
-      "source_snapshot_sha256": "dc62c5db15f215a2053f10e484e7e1f08e6583b0b7cb0b070ee6132bbda63b79"
+      "retrieved_at": "2026-08-16T02:50:00Z",
+      "source_snapshot_sha256": "e4de93a742b311c6d771fc856315295f210dcbdc7b7538ea0d98dbf54a89a7be"
     },
     {
       "observation_month": "2026-01",
@@ -28,8 +67,8 @@
       "series_id": "CES0000000001",
       "unit": "thousand_persons",
       "seasonal_adjustment": "seasonally_adjusted",
-      "retrieved_at": "2026-08-15T21:06:22Z",
-      "source_snapshot_sha256": "dc62c5db15f215a2053f10e484e7e1f08e6583b0b7cb0b070ee6132bbda63b79"
+      "retrieved_at": "2026-08-16T02:50:00Z",
+      "source_snapshot_sha256": "e4de93a742b311c6d771fc856315295f210dcbdc7b7538ea0d98dbf54a89a7be"
     },
     {
       "observation_month": "2026-01",
@@ -41,8 +80,8 @@
       "series_id": "CES0000000001",
       "unit": "thousand_persons",
       "seasonal_adjustment": "seasonally_adjusted",
-      "retrieved_at": "2026-08-15T21:06:22Z",
-      "source_snapshot_sha256": "dc62c5db15f215a2053f10e484e7e1f08e6583b0b7cb0b070ee6132bbda63b79"
+      "retrieved_at": "2026-08-16T02:50:00Z",
+      "source_snapshot_sha256": "e4de93a742b311c6d771fc856315295f210dcbdc7b7538ea0d98dbf54a89a7be"
     },
     {
       "observation_month": "2026-02",
@@ -54,8 +93,8 @@
       "series_id": "CES0000000001",
       "unit": "thousand_persons",
       "seasonal_adjustment": "seasonally_adjusted",
-      "retrieved_at": "2026-08-15T21:06:22Z",
-      "source_snapshot_sha256": "dc62c5db15f215a2053f10e484e7e1f08e6583b0b7cb0b070ee6132bbda63b79"
+      "retrieved_at": "2026-08-16T02:50:00Z",
+      "source_snapshot_sha256": "e4de93a742b311c6d771fc856315295f210dcbdc7b7538ea0d98dbf54a89a7be"
     },
     {
       "observation_month": "2026-02",
@@ -67,8 +106,8 @@
       "series_id": "CES0000000001",
       "unit": "thousand_persons",
       "seasonal_adjustment": "seasonally_adjusted",
-      "retrieved_at": "2026-08-15T21:06:22Z",
-      "source_snapshot_sha256": "dc62c5db15f215a2053f10e484e7e1f08e6583b0b7cb0b070ee6132bbda63b79"
+      "retrieved_at": "2026-08-16T02:50:00Z",
+      "source_snapshot_sha256": "e4de93a742b311c6d771fc856315295f210dcbdc7b7538ea0d98dbf54a89a7be"
     },
     {
       "observation_month": "2026-02",
@@ -80,8 +119,8 @@
       "series_id": "CES0000000001",
       "unit": "thousand_persons",
       "seasonal_adjustment": "seasonally_adjusted",
-      "retrieved_at": "2026-08-15T21:06:22Z",
-      "source_snapshot_sha256": "dc62c5db15f215a2053f10e484e7e1f08e6583b0b7cb0b070ee6132bbda63b79"
+      "retrieved_at": "2026-08-16T02:50:00Z",
+      "source_snapshot_sha256": "e4de93a742b311c6d771fc856315295f210dcbdc7b7538ea0d98dbf54a89a7be"
     },
     {
       "observation_month": "2026-03",
@@ -93,8 +132,8 @@
       "series_id": "CES0000000001",
       "unit": "thousand_persons",
       "seasonal_adjustment": "seasonally_adjusted",
-      "retrieved_at": "2026-08-15T21:06:22Z",
-      "source_snapshot_sha256": "dc62c5db15f215a2053f10e484e7e1f08e6583b0b7cb0b070ee6132bbda63b79"
+      "retrieved_at": "2026-08-16T02:50:00Z",
+      "source_snapshot_sha256": "e4de93a742b311c6d771fc856315295f210dcbdc7b7538ea0d98dbf54a89a7be"
     },
     {
       "observation_month": "2026-03",
@@ -106,8 +145,8 @@
       "series_id": "CES0000000001",
       "unit": "thousand_persons",
       "seasonal_adjustment": "seasonally_adjusted",
-      "retrieved_at": "2026-08-15T21:06:22Z",
-      "source_snapshot_sha256": "dc62c5db15f215a2053f10e484e7e1f08e6583b0b7cb0b070ee6132bbda63b79"
+      "retrieved_at": "2026-08-16T02:50:00Z",
+      "source_snapshot_sha256": "e4de93a742b311c6d771fc856315295f210dcbdc7b7538ea0d98dbf54a89a7be"
     },
     {
       "observation_month": "2026-03",
@@ -119,8 +158,8 @@
       "series_id": "CES0000000001",
       "unit": "thousand_persons",
       "seasonal_adjustment": "seasonally_adjusted",
-      "retrieved_at": "2026-08-15T21:06:22Z",
-      "source_snapshot_sha256": "dc62c5db15f215a2053f10e484e7e1f08e6583b0b7cb0b070ee6132bbda63b79"
+      "retrieved_at": "2026-08-16T02:50:00Z",
+      "source_snapshot_sha256": "e4de93a742b311c6d771fc856315295f210dcbdc7b7538ea0d98dbf54a89a7be"
     },
     {
       "observation_month": "2026-04",
@@ -132,8 +171,8 @@
       "series_id": "CES0000000001",
       "unit": "thousand_persons",
       "seasonal_adjustment": "seasonally_adjusted",
-      "retrieved_at": "2026-08-15T21:06:22Z",
-      "source_snapshot_sha256": "dc62c5db15f215a2053f10e484e7e1f08e6583b0b7cb0b070ee6132bbda63b79"
+      "retrieved_at": "2026-08-16T02:50:00Z",
+      "source_snapshot_sha256": "e4de93a742b311c6d771fc856315295f210dcbdc7b7538ea0d98dbf54a89a7be"
     },
     {
       "observation_month": "2026-04",
@@ -145,8 +184,8 @@
       "series_id": "CES0000000001",
       "unit": "thousand_persons",
       "seasonal_adjustment": "seasonally_adjusted",
-      "retrieved_at": "2026-08-15T21:06:22Z",
-      "source_snapshot_sha256": "dc62c5db15f215a2053f10e484e7e1f08e6583b0b7cb0b070ee6132bbda63b79"
+      "retrieved_at": "2026-08-16T02:50:00Z",
+      "source_snapshot_sha256": "e4de93a742b311c6d771fc856315295f210dcbdc7b7538ea0d98dbf54a89a7be"
     },
     {
       "observation_month": "2026-04",
@@ -158,8 +197,8 @@
       "series_id": "CES0000000001",
       "unit": "thousand_persons",
       "seasonal_adjustment": "seasonally_adjusted",
-      "retrieved_at": "2026-08-15T21:06:22Z",
-      "source_snapshot_sha256": "dc62c5db15f215a2053f10e484e7e1f08e6583b0b7cb0b070ee6132bbda63b79"
+      "retrieved_at": "2026-08-16T02:50:00Z",
+      "source_snapshot_sha256": "e4de93a742b311c6d771fc856315295f210dcbdc7b7538ea0d98dbf54a89a7be"
     },
     {
       "observation_month": "2026-05",
@@ -171,8 +210,8 @@
       "series_id": "CES0000000001",
       "unit": "thousand_persons",
       "seasonal_adjustment": "seasonally_adjusted",
-      "retrieved_at": "2026-08-15T21:06:22Z",
-      "source_snapshot_sha256": "dc62c5db15f215a2053f10e484e7e1f08e6583b0b7cb0b070ee6132bbda63b79"
+      "retrieved_at": "2026-08-16T02:50:00Z",
+      "source_snapshot_sha256": "e4de93a742b311c6d771fc856315295f210dcbdc7b7538ea0d98dbf54a89a7be"
     },
     {
       "observation_month": "2026-05",
@@ -184,8 +223,8 @@
       "series_id": "CES0000000001",
       "unit": "thousand_persons",
       "seasonal_adjustment": "seasonally_adjusted",
-      "retrieved_at": "2026-08-15T21:06:22Z",
-      "source_snapshot_sha256": "dc62c5db15f215a2053f10e484e7e1f08e6583b0b7cb0b070ee6132bbda63b79"
+      "retrieved_at": "2026-08-16T02:50:00Z",
+      "source_snapshot_sha256": "e4de93a742b311c6d771fc856315295f210dcbdc7b7538ea0d98dbf54a89a7be"
     },
     {
       "observation_month": "2026-05",
@@ -197,8 +236,8 @@
       "series_id": "CES0000000001",
       "unit": "thousand_persons",
       "seasonal_adjustment": "seasonally_adjusted",
-      "retrieved_at": "2026-08-15T21:06:22Z",
-      "source_snapshot_sha256": "dc62c5db15f215a2053f10e484e7e1f08e6583b0b7cb0b070ee6132bbda63b79"
+      "retrieved_at": "2026-08-16T02:50:00Z",
+      "source_snapshot_sha256": "e4de93a742b311c6d771fc856315295f210dcbdc7b7538ea0d98dbf54a89a7be"
     },
     {
       "observation_month": "2026-06",
@@ -210,8 +249,8 @@
       "series_id": "CES0000000001",
       "unit": "thousand_persons",
       "seasonal_adjustment": "seasonally_adjusted",
-      "retrieved_at": "2026-08-15T21:06:22Z",
-      "source_snapshot_sha256": "dc62c5db15f215a2053f10e484e7e1f08e6583b0b7cb0b070ee6132bbda63b79"
+      "retrieved_at": "2026-08-16T02:50:00Z",
+      "source_snapshot_sha256": "e4de93a742b311c6d771fc856315295f210dcbdc7b7538ea0d98dbf54a89a7be"
     },
     {
       "observation_month": "2026-06",
@@ -223,8 +262,8 @@
       "series_id": "CES0000000001",
       "unit": "thousand_persons",
       "seasonal_adjustment": "seasonally_adjusted",
-      "retrieved_at": "2026-08-15T21:06:22Z",
-      "source_snapshot_sha256": "dc62c5db15f215a2053f10e484e7e1f08e6583b0b7cb0b070ee6132bbda63b79"
+      "retrieved_at": "2026-08-16T02:50:00Z",
+      "source_snapshot_sha256": "e4de93a742b311c6d771fc856315295f210dcbdc7b7538ea0d98dbf54a89a7be"
     },
     {
       "observation_month": "2026-07",
@@ -236,8 +275,8 @@
       "series_id": "CES0000000001",
       "unit": "thousand_persons",
       "seasonal_adjustment": "seasonally_adjusted",
-      "retrieved_at": "2026-08-15T21:06:22Z",
-      "source_snapshot_sha256": "dc62c5db15f215a2053f10e484e7e1f08e6583b0b7cb0b070ee6132bbda63b79"
+      "retrieved_at": "2026-08-16T02:50:00Z",
+      "source_snapshot_sha256": "e4de93a742b311c6d771fc856315295f210dcbdc7b7538ea0d98dbf54a89a7be"
     }
   ]
 }
