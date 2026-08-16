@@ -1,140 +1,209 @@
-# nonfarmpayroll — 検証済みBLSデータのみ公開
+# nonfarmpayroll — BLS雇用統計を、記事・分析・プロダクトですぐ使える形に
 
-**雇用統計で危険なのは、数字が欠けていることではない。検証できない数字を埋めてしまうことだ。**
+**U.S. Bureau of Labor Statistics (BLS) の Total nonfarm employment を、出典・取得時刻・検証情報付きの JSON / CSV / 埋め込みチャートとして再利用できます。**
 
-nonfarmpayrollは、BLSの一次公表資料で確認できたデータだけを公開し、coverageが足りない分析は数値で補わず停止します。
+毎月の雇用統計を使うたびに、一次資料を探し直し、系列を整形し、出典表記を確認し、チャートを作り直す。その手間を減らすための公開データレイヤーです。
 
-> **状態: 長期の改定分析は利用不可 / 一次確認済みrelease vintageは部分公開**  
-> 旧dashboardで公開していた平均改定、不確実性、品質score、稼働率などの固定値は、検証済みBLS公表vintageから再現できないため撤回しています。
+- **見る**: https://kafka2306.github.io/nonfarmpayroll/
+- **埋め込む**: https://kafka2306.github.io/nonfarmpayroll/docs/embed/nfp/?range=5y&locale=ja&partner=public
+- **JSON**: https://kafka2306.github.io/nonfarmpayroll/docs/api/v1/total-nonfarm.json
+- **CSV**: https://kafka2306.github.io/nonfarmpayroll/docs/api/v1/total-nonfarm.csv
+- **Manifest**: https://kafka2306.github.io/nonfarmpayroll/docs/api/v1/manifest.json
 
-## 現在の公開契約
+## このrepositoryが提供する顧客価値
 
-GitHub Pagesはfail-closed構成です。
+### 1. 雇用統計を、そのまま記事やダッシュボードへ使える
 
-- `analysis_available: false`
-- `legacy_synthetic_artifacts_trusted: false`
-- BLS CES Total nonfarm employment (`CES0000000001`) の検証済みlevel snapshotをJSON/CSVで配布
-- BLS Employment Situation公表資料から一次確認したrelease vintageを部分配布
-- coverageが不十分なため、長期の平均改定幅・不確実性・品質score等は公開しない
-- 旧`dashboard.html` / `dashboard.js` / synthetic CSVをPagesへ公開しない
+BLS Current Employment Statistics の `CES0000000001`（Total nonfarm employment）を、Web表示だけでなく JSON / CSV として配布しています。
 
-公開先:
+現在の公開snapshotは **2021-07〜2026-07の61観測**です。2026-07はBLS source上でpreliminaryです。
 
-```text
-https://kafka2306.github.io/nonfarmpayroll/
+「データを探す → 整形する → 出典を確認する」から始めず、分析・可視化・記事制作へ進めます。
+
+### 2. 経済メディアやニュースレターへ、チャートをiframeで埋め込める
+
+埋め込みMVPは次のURL parameterに対応しています。
+
+- `range=1y|5y|all`
+- `locale=ja|en`
+- `partner=<opaque id>`
+
+例:
+
+```html
+<iframe
+  src="https://kafka2306.github.io/nonfarmpayroll/docs/embed/nfp/?range=5y&locale=ja&partner=public"
+  loading="lazy"
+  width="100%"
+  height="520"
+></iframe>
 ```
 
-公開URLがHTTP 200であることだけでは正常判定しません。`status.json`で`analysis_available=false`かつ`legacy_synthetic_artifacts_trusted=false`であることを確認してください。
+チャート内には BLS / CES / series ID / 単位 / 季節調整 / 最新観測日 / preliminary / 取得時刻 / source への導線を表示します。
 
-## 検証済みNFP media embed
+### 3. 数値だけでなく「どこから来たデータか」を一緒に使える
 
-経済メディア等へiframeで組み込むMVPを提供します。数値入力は`docs/api/v1/total-nonfarm.json`だけで、`docs/api/v1/manifest.json`のbyte count / SHA-256と一致しない場合はfail closedします。
+`manifest.json`には、公開artifactの byte count と SHA-256、取得時刻、coverage、series ID を保持しています。
 
-- Demo: https://kafka2306.github.io/nonfarmpayroll/docs/embed/nfp/?range=5y&locale=ja&partner=public
-- Manifest: https://kafka2306.github.io/nonfarmpayroll/docs/api/v1/manifest.json
-- Service boundary: `docs/services/nfp-media-embed.md`
-- KPI ledger: `metrics/nfp-media-embed-kpi.json`
+埋め込み側はmanifestと配布ファイルの整合性が確認できない場合、壊れた数値を表示する代わりに fail closed します。
 
-URL parameterは`range=1y|5y|all`、`locale=ja|en`、`partner=<opaque id>`です。`all`は公開snapshot内の全期間を意味します。現在のsnapshotは2021-07〜2026-07の61観測です。
+つまりこのrepositoryが提供したいのは、単なるNFPの数字ではなく、**再利用時に出典とデータ境界を失いにくい配布形態**です。
 
-embed上ではBLS / CES / `CES0000000001`、単位、季節調整、最新観測日、preliminary、取得時刻、BLS source、公開snapshot coverageを表示します。level seriesからrelease-vintage history、revision stage、改定幅、不確実性を生成しません。
+### 4. 「最新水準」と「当時の公表値」を混同しない
 
-## 検証済みデータ
+雇用統計では、現在取得できるlevel seriesと、各release時点で公表された値は同じものではありません。
 
-### 最新利用可能な水準系列
+このrepositoryでは両者を分けています。
 
-BLS Current Employment StatisticsのTotal nonfarm employment (`CES0000000001`) を公式BLS sourceから取得します。
+- **level snapshot**: `CES0000000001` の最新利用可能な水準系列
+- **release vintage**: BLS Employment Situation公表資料から一次確認した当時の公表値
 
-公開artifact:
+release vintageは現在、2026年5月〜7月の **6 records** を部分収録しています。
 
-- `docs/api/v1/manifest.json`
+これにより、利用者が「現在の系列から過去の初回公表値を逆算した」と誤認しない構造にしています。
+
+## こんな用途に向いています
+
+| 利用者 | 使い方 | 得られるもの |
+|---|---|---|
+| 経済メディア / ニュースレター | iframeを記事へ埋め込む | BLS出典付きNFPチャート |
+| アナリスト | JSON / CSVを取得 | 検証済みlevel snapshot |
+| データエンジニア | Manifestとartifactを読む | provenance / checksum付きの入力 |
+| 教育・研究用途 | sourceと観測期間を併記 | 数値の由来を追跡できる教材 |
+| サービス運営者 | status / manifestを機械判定 | 利用可能範囲をコードから確認 |
+
+## すぐ使う
+
+### JSON
+
+```bash
+curl -L https://kafka2306.github.io/nonfarmpayroll/docs/api/v1/total-nonfarm.json
+```
+
+### CSV
+
+```bash
+curl -L https://kafka2306.github.io/nonfarmpayroll/docs/api/v1/total-nonfarm.csv
+```
+
+### 配布状態を確認
+
+```bash
+curl -L https://kafka2306.github.io/nonfarmpayroll/status.json
+curl -L https://kafka2306.github.io/nonfarmpayroll/docs/api/v1/manifest.json
+```
+
+## 公開しているデータ
+
+### Total nonfarm employment level series
+
+Series:
+
+```text
+BLS Current Employment Statistics
+CES0000000001 — Total nonfarm employment
+```
+
+Artifacts:
+
 - `docs/api/v1/total-nonfarm.json`
 - `docs/api/v1/total-nonfarm.csv`
+- `docs/api/v1/manifest.json`
 
-2026-08-10T20:06:33Z取得snapshotは、BLS公式flat fileの直近5年分として2021-07〜2026-07の61 recordsを公開しています。2026-07はpreliminaryです。1939年以降の全履歴を現在のcommitted snapshotへ収録しているとは主張しません。
+現在のcommitted snapshot:
 
-この系列は各観測月の最新利用可能値であり、当時の初回・第2回・第3回公表値を単独では復元しません。
+- coverage: `2021-07-01` → `2026-07-01`
+- records: `61`
+- retrieved: `2026-08-10T20:06:33Z`
+- latest observation: `2026-07`, preliminary
 
-### release vintage — partial coverage
+一次source:
 
-`data_verified/vintages/bls-payroll-change-2026-08-07.json`には、BLS Employment Situationの公表資料をsourceとして、2026年5月〜7月について一次確認できた公表値を保存しています。
+https://download.bls.gov/pub/time.series/ce/ce.data.00a.TotalNonfarm.Employment
 
-現在の収録は6 recordsです。
+### Verified release vintages
+
+2026年5月〜7月について、BLS Employment Situationの公表資料から確認したrelease vintageを保持しています。
 
 - 2026-05: release1 `+172K` / release2 `+129K` / release3 `+63K`
 - 2026-06: release1 `+57K` / release2 `+20K`
 - 2026-07: release1 `-23K`
 
-source document:
-
-- 2026-06-05 Employment Situation — `USDL-26-0786`
-- 2026-07-02 Employment Situation — `USDL-26-1125`
-- 2026-08-07 Employment Situation — `USDL-26-1291`
-
-公開artifact:
+Artifacts:
 
 - `docs/api/v1/vintage-manifest.json`
 - `docs/api/v1/payroll-vintages.json`
 - `docs/api/v1/payroll-revisions.json`
 - `docs/api/v1/payroll-revisions.csv`
 
-このcoverageは部分的です。数か月のverified recordsを、1939年以降の長期revision分布や不確実性推定へ外挿しません。
+BLS source documents:
 
-## 撤回した旧主張
+- 2026-06-05 Employment Situation — `USDL-26-0786`
+- 2026-07-02 Employment Situation — `USDL-26-1125`
+- 2026-08-07 Employment Situation — `USDL-26-1291`
 
-旧README/dashboardには、検証済みvintageから再現できない次の主張がありました。
+Archive:
 
-- 平均改定: 約`+17K`
-- 改定の標準偏差: 約`73.4K`
-- 合成不確実性: 約`112.3K`
-- 品質score: `95/100`
-- uptime: `99.9%`
-- monthly workflow成功率: `95%+`
+https://www.bls.gov/bls/news-release/empsit.htm
 
-これらは**撤回済みの旧表示**であり、現在の分析結果ではありません。
+## 信頼性を支える設計
 
-## legacy artifact
+このrepositoryは、値を増やすことよりも「確認できる値を壊さず届けること」を優先します。
 
-次のfileはIncidentの調査証拠としてrepositoryに残っていますが、正準分析結果ではありません。
+CIでは主に次を検証します。
 
-```text
-data_processed/nfp_revisions.csv
-data_processed/nfp_revisions.feather
-data_processed/nfp_revisions.parquet
-data_processed/summary_report.json
-dashboard.js
+1. level API builder / release-vintage API builderのunit test
+2. media embed contract test / JavaScript syntax
+3. manifestと配布ファイルのbyte count / SHA-256整合性
+4. release-vintage APIのdeterministic rebuild
+5. `status.json`で公開可能範囲を機械判定できること
+6. legacy synthetic artifactをproduction入力へ再混入させないこと
+7. embedがlevel seriesからrevision historyを生成しないこと
+8. CI終了後のworking treeがcleanであること
+
+Machine-readable status:
+
+```json
+{
+  "status": "partial",
+  "analysis_available": false,
+  "revision_vintage_available": true,
+  "revision_vintage_coverage": "partial",
+  "verified_level_series_available": true,
+  "legacy_synthetic_artifacts_trusted": false
+}
 ```
 
-これらをproduction Pagesへ再公開したり、verified analysisの入力へ昇格したりしてはいけません。
+## 現在のデータ境界
 
-## CI / publication safety
+利用できるのは、**検証済みlevel snapshot**と**部分収録されたrelease vintage**です。
 
-canonical workflowは次を検証します。
+現在は十分な長期release-vintage coverageがないため、長期の平均改定幅・改定分布・不確実性scoreなどは公開していません。level seriesからそれらを推定して補完することもしません。
 
-1. BLS level API builderとrelease-vintage API builderのunit test
-2. media embed contract testとJavaScript syntax
-3. level manifest / file byte count / SHA-256整合性
-4. deterministic release-vintage API rebuild
-5. public pageに`改定分析は利用不可`が含まれること
-6. `analysis_available=false`
-7. legacy synthetic artifactを信頼しないこと
-8. embedがrevision endpointを読まないこと
-9. 撤回済み固定値や`fully automated`等の旧運用保証をpublic pageへ再混入させないこと
-10. CI実行後のworking treeがcleanであること
-
-## 本復旧の残条件
-
-長期の改定分析を再開するには、十分な期間についてBLS/一次公表資料からrelease vintageを拡充し、observation date / release date / revision stage / source documentを保持した上で、raw vintageからsummaryを再計算する必要があります。
-
-本repositoryは、coverage不足を数値で埋めず、検証できない場合はfail closedにします。
-
-## 関連
+旧dashboardに存在したsynthetic / demo / placeholder由来の固定値はproduction Pagesへ公開せず、正準分析結果として扱いません。事故経緯と撤回内容は Issue #1 に残しています。
 
 - Incident: https://github.com/KAFKA2306/nonfarmpayroll/issues/1
-- Media embed: https://github.com/KAFKA2306/nonfarmpayroll/issues/5
-- BLS Employment Situation archive: https://www.bls.gov/bls/news-release/empsit.htm
-- BLS current Employment Situation: https://www.bls.gov/news.release/empsit.nr0.htm
+- Media embed / PoC: https://github.com/KAFKA2306/nonfarmpayroll/issues/5
 
-**公開訂正:** 2026-08-05  
-**partial verified vintages更新:** 2026-08-08
-**level snapshot / media embed更新:** 2026-08-11
+## Media embedの次の価値検証
+
+技術MVPは公開済みですが、外部導入実績や有料PoCを実績として主張できる段階ではありません。
+
+今後検証する候補は、原データの販売ではなく次の導入価値です。
+
+- 媒体ブランドに合わせた表示
+- CMS組み込み
+- provenance / checksum監査パネル
+- 複数記事向け設定管理
+- 更新状態の監視とfallback手順
+- 導入支援
+
+顧客・利用・売上のKPIは、観測できた事実だけを `metrics/nfp-media-embed-kpi.json` に記録します。
+
+## Source
+
+- U.S. Bureau of Labor Statistics — Current Employment Statistics: https://www.bls.gov/ces/
+- Employment Situation archive: https://www.bls.gov/bls/news-release/empsit.htm
+- BLS Copyright Information: https://www.bls.gov/opub/copyright-information.htm
+
+**README updated: 2026-08-16**
