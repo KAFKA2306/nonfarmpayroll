@@ -62,7 +62,7 @@ BLS Current Employment Statistics の `CES0000000001`（Total nonfarm employment
 - **level snapshot**: `CES0000000001` の最新利用可能な水準系列
 - **release vintage**: BLS Employment Situation公表資料から一次確認した当時の公表値
 
-release vintageは現在、2026年5月〜7月の **6 records** を部分収録しています。
+release vintageの現在の件数・観測期間・公表段階別件数は、`docs/api/v1/vintage-manifest.json`を正とします。
 
 これにより、利用者が「現在の系列から過去の初回公表値を逆算した」と誤認しない構造にしています。
 
@@ -95,6 +95,7 @@ curl -L https://kafka2306.github.io/nonfarmpayroll/docs/api/v1/total-nonfarm.csv
 ```bash
 curl -L https://kafka2306.github.io/nonfarmpayroll/status.json
 curl -L https://kafka2306.github.io/nonfarmpayroll/docs/api/v1/manifest.json
+curl -L https://kafka2306.github.io/nonfarmpayroll/docs/api/v1/vintage-manifest.json
 ```
 
 ## 公開しているデータ
@@ -127,11 +128,7 @@ https://download.bls.gov/pub/time.series/ce/ce.data.00a.TotalNonfarm.Employment
 
 ### Verified release vintages
 
-2026年5月〜7月について、BLS Employment Situationの公表資料から確認したrelease vintageを保持しています。
-
-- 2026-05: release1 `+172K` / release2 `+129K` / release3 `+63K`
-- 2026-06: release1 `+57K` / release2 `+20K`
-- 2026-07: release1 `-23K`
+BLS Employment Situationの公表資料から確認したrelease vintageを保持しています。現在のcoverage、件数、source document ID、source URLは `docs/api/v1/vintage-manifest.json` を正とし、READMEへ同じ集計値を重複記載しません。
 
 Artifacts:
 
@@ -139,12 +136,6 @@ Artifacts:
 - `docs/api/v1/payroll-vintages.json`
 - `docs/api/v1/payroll-revisions.json`
 - `docs/api/v1/payroll-revisions.csv`
-
-BLS source documents:
-
-- 2026-06-05 Employment Situation — `USDL-26-0786`
-- 2026-07-02 Employment Situation — `USDL-26-1125`
-- 2026-08-07 Employment Situation — `USDL-26-1291`
 
 Archive:
 
@@ -210,4 +201,4 @@ Machine-readable status:
 - Employment Situation archive: https://www.bls.gov/bls/news-release/empsit.htm
 - BLS Copyright Information: https://www.bls.gov/opub/copyright-information.htm
 
-**README updated: 2026-08-16**
+**README updated: 2026-08-17**
