@@ -1,5 +1,9 @@
 # nonfarmpayroll — BLS雇用統計を、記事・分析・プロダクトですぐ使える形に
 
+[![Validate verified employment publication](https://github.com/KAFKA2306/nonfarmpayroll/actions/workflows/update-dashboard.yml/badge.svg)](https://github.com/KAFKA2306/nonfarmpayroll/actions/workflows/update-dashboard.yml)
+[![Verified BLS payroll vintages](https://github.com/KAFKA2306/nonfarmpayroll/actions/workflows/verified-vintages.yml/badge.svg)](https://github.com/KAFKA2306/nonfarmpayroll/actions/workflows/verified-vintages.yml)
+[![Validate verified browser explorer](https://github.com/KAFKA2306/nonfarmpayroll/actions/workflows/browser-explorer.yml/badge.svg)](https://github.com/KAFKA2306/nonfarmpayroll/actions/workflows/browser-explorer.yml)
+
 **U.S. Bureau of Labor Statistics (BLS) の Total nonfarm employment を、出典・取得時刻・検証情報付きの JSON / CSV / 埋め込みチャートとして再利用できます。**
 
 毎月の雇用統計を使うたびに、一次資料を探し直し、系列を整形し、出典表記を確認し、チャートを作り直す。その手間を減らすための公開データレイヤーです。
