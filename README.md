@@ -14,6 +14,36 @@
 - **CSV**: https://kafka2306.github.io/nonfarmpayroll/docs/api/v1/total-nonfarm.csv
 - **Manifest**: https://kafka2306.github.io/nonfarmpayroll/docs/api/v1/manifest.json
 
+## 30秒で分かる現在の状態
+
+- `analysis_available=false`: 長期の改定幅・改定分布・不確実性などの分析結果は、現在は公開していません。
+- `verified_level_series_available=true`: BLS Current Employment Statistics `CES0000000001` の検証済みlevel snapshotは利用できます。
+- `revision_vintage_available=true` / `revision_vintage_coverage=partial`: Employment Situation公表資料から確認したrelease vintageは一部期間だけ利用できます。coverage外へ補間・外挿しません。
+- `legacy_synthetic_artifacts_trusted=false`: 過去のsynthetic / demo / placeholder由来の値は判断材料として扱いません。
+
+この4項目の現在値は `status.json` を正とします。level snapshotのファイル整合性・coverageは `docs/api/v1/manifest.json`、release vintageの件数・coverage・source documentは `docs/api/v1/vintage-manifest.json` を確認してください。
+
+## Vision
+
+**BLS一次資料で確認できる値、部分的にしか確認できない値、まだ分析できない領域を利用者が区別でき、検証不能な統計を判断材料にしない状態を作ること**を目的にします。
+
+数字を多く表示することより、利用者が「この数字は何を根拠に、どこまで使えるのか」を確認できることを優先します。
+
+## Design philosophy
+
+- coverage不足をsyntheticな数字で埋めない
+- 現在のlevel seriesから過去のrelease-vintage historyを逆算しない
+- HTTP 200やworkflow成功だけをデータ内容の正しさの証明にしない
+- preliminary、release date、source document、coverageを利用者から隠さない
+- 過去に撤回した固定の平均改定値、品質score、uptime等を正常指標として復活させない
+- manifestのbyte count / SHA-256不一致や必要data欠損時は通常表示を続けず、利用不可として扱う
+
+## Why / 差別化
+
+一般的な雇用統計dashboardとの差は、チャートの数ではなく、**表示している値の出典・coverage・preliminary状態・取得時刻・checksumと、まだ利用できない分析範囲を同時に確認できること**です。
+
+manifest、SHA-256、embed APIそのものを価値として売るのではなく、記事・分析・教材へ再利用するときに「確認できる事実」と「まだ確認できない分析」を混同しにくくするために使います。
+
 ## このrepositoryが提供する顧客価値
 
 ### 1. 雇用統計を、そのまま記事やダッシュボードへ使える
@@ -201,4 +231,4 @@ Machine-readable status:
 - Employment Situation archive: https://www.bls.gov/bls/news-release/empsit.htm
 - BLS Copyright Information: https://www.bls.gov/opub/copyright-information.htm
 
-**README updated: 2026-08-17**
+**README updated: 2026-08-18**
