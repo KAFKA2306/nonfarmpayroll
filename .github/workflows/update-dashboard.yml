@@ -11,6 +11,7 @@ on:
       - .github/workflows/health-check.yml
       - scripts/**
       - tests/**
+      - data_processed/**
       - data_verified/**
       - docs/**
       - metrics/**
@@ -25,6 +26,7 @@ on:
       - .github/workflows/health-check.yml
       - scripts/**
       - tests/**
+      - data_processed/**
       - data_verified/**
       - docs/**
       - metrics/**
@@ -64,6 +66,8 @@ jobs:
               exit 1
             }
           done
+          test ! -e data_processed/nfp_revisions.csv
+          test ! -e data_processed/summary_report.json
 
       - name: Compile and test verified BLS builders and media embed
         run: |
