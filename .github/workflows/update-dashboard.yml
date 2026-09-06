@@ -100,6 +100,11 @@ jobs:
           test -f index.html
           test -f status.json
           grep -q '改定分析は利用不可' index.html
+          grep -q '検証済みの公表履歴を見る' index.html
+          if grep -Eq 'analysis_available[[:space:]]*=' index.html; then
+            echo '::error::Internal machine state leaked into the user-facing root page.' >&2
+            exit 1
+          fi
           python - <<'PY'
           import json
           from pathlib import Path
