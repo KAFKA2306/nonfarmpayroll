@@ -13,16 +13,37 @@
     h1 { line-height: 1.3; }
     li { margin: 0.55rem 0; }
     code { overflow-wrap: anywhere; }
+    .actions { display: flex; flex-wrap: wrap; gap: 12px; margin: 24px 0 32px; }
+    .actions a { display: inline-block; padding: 10px 14px; border: 1px solid currentColor; border-radius: 8px; font-weight: 700; }
   </style>
 </head>
 <body>
   <main>
-    <p class="status">改定分析は利用不可</p>
-    <h1>検証済みBLSデータのみを公開しています</h1>
-    <p>Current Employment Statisticsの最新利用可能な水準系列と、BLS Employment Situationの公表資料から一次確認したrelease vintageを部分公開しています。</p>
-    <p>release vintageのcoverageはまだ限定的です。長期の平均改定幅、不確実性、品質scoreなどの集計は公開していません。</p>
+    <p class="status">長期の改定分析は利用不可</p>
+    <h1>検証済みの米国雇用者数を確認する</h1>
+    <p>BLS Current Employment Statistics の <code>CES0000000001</code>（Total nonfarm employment）について、検証済みの水準系列を公開しています。現在の公開snapshotは2021-07〜2026-07です。</p>
+    <p>release vintageは一部期間のみ検証済みです。coverage外の改定幅、長期平均、不確実性、品質scoreは推測せず公開しません。</p>
 
-    <h2>現在の状態</h2>
+    <nav class="actions" aria-label="主要な操作">
+      <a href="docs/embed/nfp/index.html?range=5y&amp;locale=ja&amp;partner=public">検証済みチャートを見る</a>
+      <a href="docs/api/v1/manifest.json">データの出典・更新状態を確認</a>
+    </nav>
+
+    <h2>確認できること</h2>
+    <ul>
+      <li>検証済みTotal nonfarm employment水準系列</li>
+      <li>manifestとSHA-256で検証される公開チャート</li>
+      <li>一次公表資料に紐づく、一部期間のrelease vintage</li>
+    </ul>
+
+    <h2>現在は確認できないこと</h2>
+    <ul>
+      <li>長期の平均改定幅や不確実性</li>
+      <li>coverage外のrelease vintageやrevision stage</li>
+      <li>旧dashboardに含まれていたsynthetic・demo・placeholder値</li>
+    </ul>
+
+    <h2>機械可読な状態</h2>
     <ul>
       <li><code>analysis_available = false</code></li>
       <li><code>revision_vintage_coverage = partial</code></li>
@@ -30,7 +51,7 @@
     </ul>
 
     <h2>検証済みNFP level snapshot / media embed</h2>
-    <p>BLS CES <code>CES0000000001</code> のlevel seriesだけを使う埋め込みデモです。manifestとSHA-256が一致しない場合はチャートを表示しません。現在の公開snapshotは2021-07〜2026-07です。</p>
+    <p>BLS CES <code>CES0000000001</code> のlevel seriesだけを使います。manifestとSHA-256が一致しない場合はチャートを表示しません。</p>
     <ul>
       <li><a href="docs/embed/nfp/index.html?range=5y&amp;locale=ja&amp;partner=public">検証済みNFPチャート埋め込みデモ</a></li>
       <li><a href="docs/api/v1/manifest.json">level series manifest</a></li>
@@ -50,7 +71,6 @@
 
     <h2>重要な制約</h2>
     <ul>
-      <li>旧dashboardのsynthetic・demo・placeholder値は、分析・投資判断・政策評価に使用できません。</li>
       <li>coverage不足を推測値で補完しません。</li>
       <li>level snapshotからrelease-vintage history、改定幅、不確実性を生成しません。</li>
       <li>十分な一次公表履歴が揃うまで、長期の改定統計はfail closedのままです。</li>
