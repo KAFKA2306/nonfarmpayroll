@@ -229,7 +229,7 @@ def main() -> None:
     parser.add_argument(
         "--snapshot",
         type=Path,
-        default=Path("data_verified/vintages/bls-payroll-change-2026-08-07.json"),
+        default=Path("data_verified/vintages/bls-payroll-change-2026-09-04.json"),
     )
     parser.add_argument("--output-dir", type=Path, default=Path("docs/api/v1"))
     args = parser.parse_args()

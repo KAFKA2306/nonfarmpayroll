@@ -3,7 +3,7 @@
   "analysis_available": false,
   "coverage_status": "partial_verified_vintages",
   "integrity_status": "SOURCE_DOCUMENT_CHECKSUMS_NOT_ARCHIVED",
-  "record_count": 21,
+  "record_count": 24,
   "records": [
     {
       "observation_month": "2025-12",
@@ -15,8 +15,8 @@
       "series_id": "CES0000000001",
       "unit": "thousand_persons",
       "seasonal_adjustment": "seasonally_adjusted",
-      "retrieved_at": "2026-08-16T02:50:00Z",
-      "source_snapshot_sha256": "e4de93a742b311c6d771fc856315295f210dcbdc7b7538ea0d98dbf54a89a7be"
+      "retrieved_at": "2026-09-08T06:01:37Z",
+      "source_snapshot_sha256": "4148db92a14472e40c758f644efb7e876ae680148a754a6d02b23fcbf9e55cb9"
     },
     {
       "observation_month": "2025-12",
@@ -28,8 +28,8 @@
       "series_id": "CES0000000001",
       "unit": "thousand_persons",
       "seasonal_adjustment": "seasonally_adjusted",
-      "retrieved_at": "2026-08-16T02:50:00Z",
-      "source_snapshot_sha256": "e4de93a742b311c6d771fc856315295f210dcbdc7b7538ea0d98dbf54a89a7be"
+      "retrieved_at": "2026-09-08T06:01:37Z",
+      "source_snapshot_sha256": "4148db92a14472e40c758f644efb7e876ae680148a754a6d02b23fcbf9e55cb9"
     },
     {
       "observation_month": "2025-12",
@@ -41,8 +41,8 @@
       "series_id": "CES0000000001",
       "unit": "thousand_persons",
       "seasonal_adjustment": "seasonally_adjusted",
-      "retrieved_at": "2026-08-16T02:50:00Z",
-      "source_snapshot_sha256": "e4de93a742b311c6d771fc856315295f210dcbdc7b7538ea0d98dbf54a89a7be"
+      "retrieved_at": "2026-09-08T06:01:37Z",
+      "source_snapshot_sha256": "4148db92a14472e40c758f644efb7e876ae680148a754a6d02b23fcbf9e55cb9"
     },
     {
       "observation_month": "2026-01",
@@ -54,8 +54,8 @@
       "series_id": "CES0000000001",
       "unit": "thousand_persons",
       "seasonal_adjustment": "seasonally_adjusted",
-      "retrieved_at": "2026-08-16T02:50:00Z",
-      "source_snapshot_sha256": "e4de93a742b311c6d771fc856315295f210dcbdc7b7538ea0d98dbf54a89a7be"
+      "retrieved_at": "2026-09-08T06:01:37Z",
+      "source_snapshot_sha256": "4148db92a14472e40c758f644efb7e876ae680148a754a6d02b23fcbf9e55cb9"
     },
     {
       "observation_month": "2026-01",
@@ -67,8 +67,8 @@
       "series_id": "CES0000000001",
       "unit": "thousand_persons",
       "seasonal_adjustment": "seasonally_adjusted",
-      "retrieved_at": "2026-08-16T02:50:00Z",
-      "source_snapshot_sha256": "e4de93a742b311c6d771fc856315295f210dcbdc7b7538ea0d98dbf54a89a7be"
+      "retrieved_at": "2026-09-08T06:01:37Z",
+      "source_snapshot_sha256": "4148db92a14472e40c758f644efb7e876ae680148a754a6d02b23fcbf9e55cb9"
     },
     {
       "observation_month": "2026-01",
@@ -80,8 +80,8 @@
       "series_id": "CES0000000001",
       "unit": "thousand_persons",
       "seasonal_adjustment": "seasonally_adjusted",
-      "retrieved_at": "2026-08-16T02:50:00Z",
-      "source_snapshot_sha256": "e4de93a742b311c6d771fc856315295f210dcbdc7b7538ea0d98dbf54a89a7be"
+      "retrieved_at": "2026-09-08T06:01:37Z",
+      "source_snapshot_sha256": "4148db92a14472e40c758f644efb7e876ae680148a754a6d02b23fcbf9e55cb9"
     },
     {
       "observation_month": "2026-02",
@@ -93,8 +93,8 @@
       "series_id": "CES0000000001",
       "unit": "thousand_persons",
       "seasonal_adjustment": "seasonally_adjusted",
-      "retrieved_at": "2026-08-16T02:50:00Z",
-      "source_snapshot_sha256": "e4de93a742b311c6d771fc856315295f210dcbdc7b7538ea0d98dbf54a89a7be"
+      "retrieved_at": "2026-09-08T06:01:37Z",
+      "source_snapshot_sha256": "4148db92a14472e40c758f644efb7e876ae680148a754a6d02b23fcbf9e55cb9"
     },
     {
       "observation_month": "2026-02",
@@ -106,8 +106,8 @@
       "series_id": "CES0000000001",
       "unit": "thousand_persons",
       "seasonal_adjustment": "seasonally_adjusted",
-      "retrieved_at": "2026-08-16T02:50:00Z",
-      "source_snapshot_sha256": "e4de93a742b311c6d771fc856315295f210dcbdc7b7538ea0d98dbf54a89a7be"
+      "retrieved_at": "2026-09-08T06:01:37Z",
+      "source_snapshot_sha256": "4148db92a14472e40c758f644efb7e876ae680148a754a6d02b23fcbf9e55cb9"
     },
     {
       "observation_month": "2026-02",
@@ -119,8 +119,8 @@
       "series_id": "CES0000000001",
       "unit": "thousand_persons",
       "seasonal_adjustment": "seasonally_adjusted",
-      "retrieved_at": "2026-08-16T02:50:00Z",
-      "source_snapshot_sha256": "e4de93a742b311c6d771fc856315295f210dcbdc7b7538ea0d98dbf54a89a7be"
+      "retrieved_at": "2026-09-08T06:01:37Z",
+      "source_snapshot_sha256": "4148db92a14472e40c758f644efb7e876ae680148a754a6d02b23fcbf9e55cb9"
     },
     {
       "observation_month": "2026-03",
@@ -132,8 +132,8 @@
       "series_id": "CES0000000001",
       "unit": "thousand_persons",
       "seasonal_adjustment": "seasonally_adjusted",
-      "retrieved_at": "2026-08-16T02:50:00Z",
-      "source_snapshot_sha256": "e4de93a742b311c6d771fc856315295f210dcbdc7b7538ea0d98dbf54a89a7be"
+      "retrieved_at": "2026-09-08T06:01:37Z",
+      "source_snapshot_sha256": "4148db92a14472e40c758f644efb7e876ae680148a754a6d02b23fcbf9e55cb9"
     },
     {
       "observation_month": "2026-03",
@@ -145,8 +145,8 @@
       "series_id": "CES0000000001",
       "unit": "thousand_persons",
       "seasonal_adjustment": "seasonally_adjusted",
-      "retrieved_at": "2026-08-16T02:50:00Z",
-      "source_snapshot_sha256": "e4de93a742b311c6d771fc856315295f210dcbdc7b7538ea0d98dbf54a89a7be"
+      "retrieved_at": "2026-09-08T06:01:37Z",
+      "source_snapshot_sha256": "4148db92a14472e40c758f644efb7e876ae680148a754a6d02b23fcbf9e55cb9"
     },
     {
       "observation_month": "2026-03",
@@ -158,8 +158,8 @@
       "series_id": "CES0000000001",
       "unit": "thousand_persons",
       "seasonal_adjustment": "seasonally_adjusted",
-      "retrieved_at": "2026-08-16T02:50:00Z",
-      "source_snapshot_sha256": "e4de93a742b311c6d771fc856315295f210dcbdc7b7538ea0d98dbf54a89a7be"
+      "retrieved_at": "2026-09-08T06:01:37Z",
+      "source_snapshot_sha256": "4148db92a14472e40c758f644efb7e876ae680148a754a6d02b23fcbf9e55cb9"
     },
     {
       "observation_month": "2026-04",
@@ -171,8 +171,8 @@
       "series_id": "CES0000000001",
       "unit": "thousand_persons",
       "seasonal_adjustment": "seasonally_adjusted",
-      "retrieved_at": "2026-08-16T02:50:00Z",
-      "source_snapshot_sha256": "e4de93a742b311c6d771fc856315295f210dcbdc7b7538ea0d98dbf54a89a7be"
+      "retrieved_at": "2026-09-08T06:01:37Z",
+      "source_snapshot_sha256": "4148db92a14472e40c758f644efb7e876ae680148a754a6d02b23fcbf9e55cb9"
     },
     {
       "observation_month": "2026-04",
@@ -184,8 +184,8 @@
       "series_id": "CES0000000001",
       "unit": "thousand_persons",
       "seasonal_adjustment": "seasonally_adjusted",
-      "retrieved_at": "2026-08-16T02:50:00Z",
-      "source_snapshot_sha256": "e4de93a742b311c6d771fc856315295f210dcbdc7b7538ea0d98dbf54a89a7be"
+      "retrieved_at": "2026-09-08T06:01:37Z",
+      "source_snapshot_sha256": "4148db92a14472e40c758f644efb7e876ae680148a754a6d02b23fcbf9e55cb9"
     },
     {
       "observation_month": "2026-04",
@@ -197,8 +197,8 @@
       "series_id": "CES0000000001",
       "unit": "thousand_persons",
       "seasonal_adjustment": "seasonally_adjusted",
-      "retrieved_at": "2026-08-16T02:50:00Z",
-      "source_snapshot_sha256": "e4de93a742b311c6d771fc856315295f210dcbdc7b7538ea0d98dbf54a89a7be"
+      "retrieved_at": "2026-09-08T06:01:37Z",
+      "source_snapshot_sha256": "4148db92a14472e40c758f644efb7e876ae680148a754a6d02b23fcbf9e55cb9"
     },
     {
       "observation_month": "2026-05",
@@ -210,8 +210,8 @@
       "series_id": "CES0000000001",
       "unit": "thousand_persons",
       "seasonal_adjustment": "seasonally_adjusted",
-      "retrieved_at": "2026-08-16T02:50:00Z",
-      "source_snapshot_sha256": "e4de93a742b311c6d771fc856315295f210dcbdc7b7538ea0d98dbf54a89a7be"
+      "retrieved_at": "2026-09-08T06:01:37Z",
+      "source_snapshot_sha256": "4148db92a14472e40c758f644efb7e876ae680148a754a6d02b23fcbf9e55cb9"
     },
     {
       "observation_month": "2026-05",
@@ -223,8 +223,8 @@
       "series_id": "CES0000000001",
       "unit": "thousand_persons",
       "seasonal_adjustment": "seasonally_adjusted",
-      "retrieved_at": "2026-08-16T02:50:00Z",
-      "source_snapshot_sha256": "e4de93a742b311c6d771fc856315295f210dcbdc7b7538ea0d98dbf54a89a7be"
+      "retrieved_at": "2026-09-08T06:01:37Z",
+      "source_snapshot_sha256": "4148db92a14472e40c758f644efb7e876ae680148a754a6d02b23fcbf9e55cb9"
     },
     {
       "observation_month": "2026-05",
@@ -232,12 +232,12 @@
       "revision_stage": "release3",
       "value_thousands": 63,
       "source_document_id": "USDL-26-1291",
-      "source_url": "https://www.bls.gov/news.release/empsit.nr0.htm",
+      "source_url": "https://www.bls.gov/news.release/archives/empsit_08072026.htm",
       "series_id": "CES0000000001",
       "unit": "thousand_persons",
       "seasonal_adjustment": "seasonally_adjusted",
-      "retrieved_at": "2026-08-16T02:50:00Z",
-      "source_snapshot_sha256": "e4de93a742b311c6d771fc856315295f210dcbdc7b7538ea0d98dbf54a89a7be"
+      "retrieved_at": "2026-09-08T06:01:37Z",
+      "source_snapshot_sha256": "4148db92a14472e40c758f644efb7e876ae680148a754a6d02b23fcbf9e55cb9"
     },
     {
       "observation_month": "2026-06",
@@ -249,8 +249,8 @@
       "series_id": "CES0000000001",
       "unit": "thousand_persons",
       "seasonal_adjustment": "seasonally_adjusted",
-      "retrieved_at": "2026-08-16T02:50:00Z",
-      "source_snapshot_sha256": "e4de93a742b311c6d771fc856315295f210dcbdc7b7538ea0d98dbf54a89a7be"
+      "retrieved_at": "2026-09-08T06:01:37Z",
+      "source_snapshot_sha256": "4148db92a14472e40c758f644efb7e876ae680148a754a6d02b23fcbf9e55cb9"
     },
     {
       "observation_month": "2026-06",
@@ -258,12 +258,25 @@
       "revision_stage": "release2",
       "value_thousands": 20,
       "source_document_id": "USDL-26-1291",
-      "source_url": "https://www.bls.gov/news.release/empsit.nr0.htm",
+      "source_url": "https://www.bls.gov/news.release/archives/empsit_08072026.htm",
       "series_id": "CES0000000001",
       "unit": "thousand_persons",
       "seasonal_adjustment": "seasonally_adjusted",
-      "retrieved_at": "2026-08-16T02:50:00Z",
-      "source_snapshot_sha256": "e4de93a742b311c6d771fc856315295f210dcbdc7b7538ea0d98dbf54a89a7be"
+      "retrieved_at": "2026-09-08T06:01:37Z",
+      "source_snapshot_sha256": "4148db92a14472e40c758f644efb7e876ae680148a754a6d02b23fcbf9e55cb9"
+    },
+    {
+      "observation_month": "2026-06",
+      "release_date": "2026-09-04",
+      "revision_stage": "release3",
+      "value_thousands": 31,
+      "source_document_id": "USDL-26-1435",
+      "source_url": "https://www.bls.gov/news.release/archives/empsit_09042026.htm",
+      "series_id": "CES0000000001",
+      "unit": "thousand_persons",
+      "seasonal_adjustment": "seasonally_adjusted",
+      "retrieved_at": "2026-09-08T06:01:37Z",
+      "source_snapshot_sha256": "4148db92a14472e40c758f644efb7e876ae680148a754a6d02b23fcbf9e55cb9"
     },
     {
       "observation_month": "2026-07",
@@ -271,12 +284,38 @@
       "revision_stage": "release1",
       "value_thousands": -23,
       "source_document_id": "USDL-26-1291",
-      "source_url": "https://www.bls.gov/news.release/empsit.nr0.htm",
+      "source_url": "https://www.bls.gov/news.release/archives/empsit_08072026.htm",
       "series_id": "CES0000000001",
       "unit": "thousand_persons",
       "seasonal_adjustment": "seasonally_adjusted",
-      "retrieved_at": "2026-08-16T02:50:00Z",
-      "source_snapshot_sha256": "e4de93a742b311c6d771fc856315295f210dcbdc7b7538ea0d98dbf54a89a7be"
+      "retrieved_at": "2026-09-08T06:01:37Z",
+      "source_snapshot_sha256": "4148db92a14472e40c758f644efb7e876ae680148a754a6d02b23fcbf9e55cb9"
+    },
+    {
+      "observation_month": "2026-07",
+      "release_date": "2026-09-04",
+      "revision_stage": "release2",
+      "value_thousands": 21,
+      "source_document_id": "USDL-26-1435",
+      "source_url": "https://www.bls.gov/news.release/archives/empsit_09042026.htm",
+      "series_id": "CES0000000001",
+      "unit": "thousand_persons",
+      "seasonal_adjustment": "seasonally_adjusted",
+      "retrieved_at": "2026-09-08T06:01:37Z",
+      "source_snapshot_sha256": "4148db92a14472e40c758f644efb7e876ae680148a754a6d02b23fcbf9e55cb9"
+    },
+    {
+      "observation_month": "2026-08",
+      "release_date": "2026-09-04",
+      "revision_stage": "release1",
+      "value_thousands": 162,
+      "source_document_id": "USDL-26-1435",
+      "source_url": "https://www.bls.gov/news.release/archives/empsit_09042026.htm",
+      "series_id": "CES0000000001",
+      "unit": "thousand_persons",
+      "seasonal_adjustment": "seasonally_adjusted",
+      "retrieved_at": "2026-09-08T06:01:37Z",
+      "source_snapshot_sha256": "4148db92a14472e40c758f644efb7e876ae680148a754a6d02b23fcbf9e55cb9"
     }
   ]
 }
