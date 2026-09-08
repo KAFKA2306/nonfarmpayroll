@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - data_verified/vintages/**
+      - scripts/archive_bls_release_documents.py
       - scripts/build_bls_vintage_api.py
       - tests/test_bls_vintage_api.py
       - docs/api/v1/payroll-*.json
@@ -14,6 +15,7 @@ on:
     branches: [main]
     paths:
       - data_verified/vintages/**
+      - scripts/archive_bls_release_documents.py
       - scripts/build_bls_vintage_api.py
       - tests/test_bls_vintage_api.py
       - docs/api/v1/payroll-*.json
@@ -34,8 +36,31 @@ jobs:
       - name: Compile and test
         run: |
           set -euo pipefail
-          python -m py_compile scripts/build_bls_vintage_api.py tests/test_bls_vintage_api.py
+          python -m py_compile scripts/archive_bls_release_documents.py scripts/build_bls_vintage_api.py tests/test_bls_vintage_api.py
           python -m unittest tests.test_bls_vintage_api -v
+      - name: Fetch official BLS release documents
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/bls-release-documents
+          python scripts/archive_bls_release_documents.py \
+            --manifest docs/api/v1/vintage-manifest.json \
+            --output-dir /tmp/bls-release-documents
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          manifest = json.loads(Path('/tmp/bls-release-documents/manifest.json').read_text())
+          assert manifest['authority'] == 'U.S. Bureau of Labor Statistics'
+          assert manifest['document_count'] == 9
+          assert len({item['source_document_id'] for item in manifest['documents']}) == 9
+          assert all(len(item['sha256']) == 64 for item in manifest['documents'])
+          print('fetched 9 official BLS release documents')
+          PY
+      - name: Upload official BLS release documents
+        uses: actions/upload-artifact@v7
+        with:
+          name: official-bls-release-documents
+          path: /tmp/bls-release-documents
+          retention-days: 30
       - name: Rebuild deterministic distribution
         run: |
           set -euo pipefail
