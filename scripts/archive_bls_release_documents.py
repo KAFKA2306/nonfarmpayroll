@@ -10,7 +10,11 @@ from urllib.parse import urlparse
 from urllib.request import Request, urlopen
 
 BLS_HOSTS = {"www.bls.gov", "bls.gov"}
-USER_AGENT = "KAFKA2306-nonfarmpayroll/1.0 (+https://github.com/KAFKA2306/nonfarmpayroll)"
+REQUEST_HEADERS = {
+    "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36",
+    "Accept": "text/html,application/xhtml+xml,application/pdf;q=0.9,*/*;q=0.8",
+    "Accept-Language": "en-US,en;q=0.9",
+}
 
 
 def _dump_json(payload: object) -> str:
@@ -18,7 +22,7 @@ def _dump_json(payload: object) -> str:
 
 
 def _fetch(url: str) -> tuple[bytes, str]:
-    request = Request(url, headers={"User-Agent": USER_AGENT, "Accept": "text/html,application/pdf"})
+    request = Request(url, headers=REQUEST_HEADERS)
     with urlopen(request, timeout=60) as response:
         final_url = response.geturl()
         if urlparse(final_url).hostname not in BLS_HOSTS:
