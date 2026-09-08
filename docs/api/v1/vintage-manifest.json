@@ -4,20 +4,20 @@
   "series_id": "CES0000000001",
   "unit": "thousand_persons",
   "seasonal_adjustment": "seasonally_adjusted",
-  "retrieved_at": "2026-08-16T02:50:00Z",
+  "retrieved_at": "2026-09-08T06:01:37Z",
   "analysis_available": false,
   "coverage_status": "partial_verified_vintages",
   "integrity_status": "SOURCE_DOCUMENT_CHECKSUMS_NOT_ARCHIVED",
-  "vintage_record_count": 21,
-  "revision_record_count": 13,
+  "vintage_record_count": 24,
+  "revision_record_count": 15,
   "revision_stage_counts": {
-    "release1": 8,
-    "release2": 7,
-    "release3": 6
+    "release1": 9,
+    "release2": 8,
+    "release3": 7
   },
   "first_observation": "2025-12",
-  "last_observation": "2026-07",
-  "source_snapshot_sha256": "e4de93a742b311c6d771fc856315295f210dcbdc7b7538ea0d98dbf54a89a7be",
+  "last_observation": "2026-08",
+  "source_snapshot_sha256": "4148db92a14472e40c758f644efb7e876ae680148a754a6d02b23fcbf9e55cb9",
   "source_urls": [
     "https://www.bls.gov/news.release/archives/empsit_01092026.htm",
     "https://www.bls.gov/news.release/archives/empsit_02112026.htm",
@@ -26,7 +26,8 @@
     "https://www.bls.gov/news.release/archives/empsit_05082026.htm",
     "https://www.bls.gov/news.release/archives/empsit_06052026.htm",
     "https://www.bls.gov/news.release/archives/empsit_07022026.pdf",
-    "https://www.bls.gov/news.release/empsit.nr0.htm"
+    "https://www.bls.gov/news.release/archives/empsit_08072026.htm",
+    "https://www.bls.gov/news.release/archives/empsit_09042026.htm"
   ],
   "source_document_ids": [
     "USDL-26-0020",
@@ -36,7 +37,8 @@
     "USDL-26-0687",
     "USDL-26-0786",
     "USDL-26-1125",
-    "USDL-26-1291"
+    "USDL-26-1291",
+    "USDL-26-1435"
   ],
   "license": {
     "name": "U.S. federal government public domain",
@@ -45,16 +47,16 @@
   },
   "files": {
     "payroll-vintages.json": {
-      "bytes": 11700,
-      "sha256": "8ccc944a4c3ebbef3069ae50848d28f31beed153f654b718f83a2bb818040e7a"
+      "bytes": 13387,
+      "sha256": "e69122f2c45eec7a02417090b6488c2885697f9bb00a1715b96017d7b18395d8"
     },
     "payroll-revisions.json": {
-      "bytes": 6287,
-      "sha256": "ffbfb0c02ff00adfecad74adcd2781b1e487b471ae3b98ebfdf6abb83bf56551"
+      "bytes": 7266,
+      "sha256": "595abd41134af8c38926efd3a3945dfdb3c4799bbed19e835f7a6b963bfc02bb"
     },
     "payroll-revisions.csv": {
-      "bytes": 2582,
-      "sha256": "2f51a6d66a7d02218428b1b4b42d3ec69f876c29c819954869e1c493e92e73c1"
+      "bytes": 2983,
+      "sha256": "2d169db01875e2b87ac5de103ccbd4d7b66496d4178112c5393a0b2f73c46691"
     }
   }
 }
