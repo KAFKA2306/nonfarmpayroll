@@ -88,6 +88,13 @@ class BlsVintageApiTest(unittest.TestCase):
         self.assertEqual(august[0]["source_document_id"], "USDL-26-1435")
         self.assertEqual(august[0]["release_date"], "2026-09-04")
 
+    def test_non_finite_payroll_value_is_rejected(self):
+        for invalid in (float("nan"), float("inf"), float("-inf")):
+            with self.subTest(value=str(invalid)):
+                self._assert_rejected(
+                    lambda payload: payload["records"][0].__setitem__("value_thousands", invalid)
+                )
+
     def test_duplicate_stage_is_rejected(self):
         def mutate(payload):
             payload["records"].append(copy.deepcopy(payload["records"][0]))
