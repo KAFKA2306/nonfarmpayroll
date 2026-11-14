@@ -6,6 +6,7 @@ import csv
 import hashlib
 import io
 import json
+import math
 from collections import defaultdict
 from datetime import date, datetime
 from pathlib import Path
@@ -74,7 +75,7 @@ def _validate_snapshot(snapshot: dict) -> None:
             raise ValueError(f"missing record fields: {', '.join(missing)}")
         if row["revision_stage"] not in VALID_STAGES:
             raise ValueError("unsupported revision_stage")
-        if isinstance(row["value_thousands"], bool) or not isinstance(row["value_thousands"], (int, float)):
+        if (isinstance(row["value_thousands"], bool) or not isinstance(row["value_thousands"], (int, float)) or not math.isfinite(row["value_thousands"])):
             raise ValueError("value_thousands must be numeric")
         if not isinstance(row["source_document_id"], str) or not row["source_document_id"].strip():
             raise ValueError("missing source_document_id")
