@@ -6,7 +6,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from scripts.build_bls_level_api import build_payload, parse_series, write_outputs
+from scripts.build_bls_level_api import build_payload, parse_series, records_from_snapshot, write_outputs
 
 
 SAMPLE = b"series_id\tyear\tperiod\tvalue\tfootnote_codes\nCES0000000001\t2026\tM05\t158927\tP\nCES0000000001\t2026\tM06\t158984\tP\nCES0500000001\t2026\tM06\t136000\t\n"
@@ -25,6 +25,14 @@ class BLSLevelApiTests(unittest.TestCase):
         duplicate = SAMPLE + b"CES0000000001\t2026\tM06\t158985\tP\n"
         with self.assertRaisesRegex(ValueError, "duplicate observation_date"):
             parse_series(duplicate)
+
+    def test_snapshot_rejects_coerced_values(self) -> None:
+        snapshot = {"previous_record": {"observation_date": "2026-05-01", "value_thousands": 158927, "preliminary": False}, "latest_record": {"observation_date": "2026-06-01", "value_thousands": 158984, "preliminary": True}}
+        self.assertEqual(len(records_from_snapshot(snapshot)), 2)
+        for field, malformed in (("preliminary", "false"), ("value_thousands", "158984"), ("value_thousands", True)):
+            invalid = {**snapshot, "latest_record": {**snapshot["latest_record"], field: malformed}}
+            with self.subTest(field=field, malformed=malformed), self.assertRaises(ValueError):
+                records_from_snapshot(invalid)
 
     def test_manifest_matches_generated_files(self) -> None:
         payload = build_payload(parse_series(SAMPLE), SOURCE)
