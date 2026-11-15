@@ -69,7 +69,11 @@ def records_from_snapshot(snapshot: dict[str, object]) -> list[dict[str, object]
     rows = []
     for key in ("previous_record", "latest_record"):
         source = snapshot[key]
-        rows.append({"series_id": SERIES_ID, "observation_date": source["observation_date"], "value_thousands": int(source["value_thousands"]), "preliminary": bool(source["preliminary"])})
+        if type(source.get("value_thousands")) is not int:
+            raise ValueError(f"{key}: value_thousands must be an integer")
+        if type(source.get("preliminary")) is not bool:
+            raise ValueError(f"{key}: preliminary must be a boolean")
+        rows.append({"series_id": SERIES_ID, "observation_date": source["observation_date"], "value_thousands": source["value_thousands"], "preliminary": source["preliminary"]})
     return _validate(rows)
 
 
